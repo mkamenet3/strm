@@ -6,6 +6,10 @@
 #' @param data Name of dataframe
 #' @param listw Weights list object.
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
+#' @example 
+#' \donttest{
+#' formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
+#' spatemperr(formula2, time=2)}
 spatemperr <- function(formula, data, listw, time=2){
     if(time==1){
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
