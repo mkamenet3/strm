@@ -33,11 +33,14 @@ createlagvars <- function(data, vars, id, time=2, trans=NULL, ...){
             dplyr::select(!!keepvars) %>% 
             dplyr::mutate_at(vars(-!!id), .funs = list(log10 = ~log(.,10)))
     } 
-    else if (!is.null(trans)){
-        stop(paste0("Your selected transformation, ",trans, " is not yet implemented. Please create an issue."))
-    } else {
+    else if(trans==0){
         message("No transformations")
-    }
+        outdf <- data %>%
+            dplyr::filter(!!!filter_args) %>%
+            dplyr::select(!!keepvars)
+    } else {
+        stop(paste0("Your selected transformation, ",trans, " is not yet implemented. Please create an issue."))
+    } 
     outdf <- suppressWarnings(outdf%>%
         tidyr::nest(-!!id) %>%
         dplyr::mutate(lags = purrr::map(data, function(dat){
@@ -49,7 +52,7 @@ createlagvars <- function(data, vars, id, time=2, trans=NULL, ...){
     return(outdf)
 }
 
-# res <- createlagvars(data = Produc, 
-#                      vars=c(y,xs), id="state", time=2, trans="log",
+# res <- createlagvars(data = Produc,
+#                      vars=c(y,xs), id="state", time=1, trans="log",
 #                      year==1970 | year==1971)
 
