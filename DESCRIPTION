@@ -1,0 +1,27 @@
+Package: spatemperr
+Title: Spatio-temporal Lag Model
+Version: 0.1
+Authors@R: person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre"))
+Description:    This package 
+Depends:
+    R (>= 3.6.1),
+Imports:
+    dplyr (>= 0.8.3),
+    tidyr (>= 1.0.0),
+    purrr (>= 0.3.3),
+    spatialreg (>= 1.1.5),
+    stats,
+    grDevices,
+    methods,
+    graphics,
+    utils,
+    knitr
+VignetteBuilder: knitr
+Encoding: UTF-8
+License: GPL (>= 2)
+Maintainer: Maria Kamenetsky <maria.kamenetsky@gmail.com>
+BugReports: https://github.com/mkamenet3/spatemperr/issues
+LazyData: true
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
+RoxygenNote: 7.0.1
+Suggests: testthat
