@@ -1,10 +1,18 @@
-spatemperr <- function(formula2, data, listw, type, time=2){
+#' Spatio-temporal regression model
+#' @title 
+#' spatemperr
+#' @description The \code{spatemperr} function provides maximum likelihood estimation of a spatio-temporal simultaneous autoregressive lag error model. This package is built on the \code{lagsarlm()} function from the \code{spatialreg} package.
+#' @param formula Model formula specified by user (without lags). Any transformed variables, such as logged-variables, must be created outside of this function in the dataframe.
+#' @param data Name of dataframe
+#' @param listw Weights list object.
+#' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
+spatemperr <- function(formula, data, listw, time=2){
     if(time==1){
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
         #TODO: perform regular lagsarlm model
     }
     else {
-        formin <- formula2
+        formin <- formula
         print(formin)
         #add in temporally lagged response and temporally lagged explanatory variable into formula
         ##add in time lagged response
