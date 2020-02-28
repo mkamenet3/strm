@@ -10,6 +10,7 @@ Imports:
     tidyr (>= 1.0.0),
     purrr (>= 0.3.3),
     spatialreg (>= 1.1.5),
+    lazyeval,
     stats,
     grDevices,
     methods,
