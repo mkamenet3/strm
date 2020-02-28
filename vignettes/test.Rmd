@@ -1,0 +1,193 @@
+---
+title: "Test"
+author: "Maria Kamenetsky"
+date: "December 6, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(splm)
+library(spdep)
+library(rgdal)
+library(sf)
+```
+
+Load data
+
+```{r}
+dat <- readOGR(dsn = ".", layer="sptdmg3")
+plot(dat)
+head(dat@data)
+
+#queen case 
+nb.poly <- poly2nb(dat, row.names=row.names(dat))
+listw <- nb2listw(nb.poly, style="W", zero.policy = TRUE)
+coords <- coordinates(dat)
+plot(dat, main="WI TEST");
+plot(listw, coords, col="blue", add=TRUE)
+
+#knn4
+col.knn <- knearneigh(coords, k=4)
+nbknn <- knn2nb(col.knn)
+
+plot(dat); plot(nbknn, coords, add=TRUE)
+```
+
+
+#OLS
+
+
+
+
+
+#Test code
+
+Fit a spatial error model but include a temporally lagged response variable, temporally lagged explanatory variable, and temporally and spatially lagged explanatory variables.
+
+Spatial error model at time $t$:
+
+$$Y_t = X_t \beta + u_t, u_t=\rho Wu_t + \varepsilon$$
+
+Adding in a temporally lagged response variable and temporally lagged explanatory variable:
+
+$$Y_t = X_t\beta_t + \beta_2Y_{t-1} + X_{t-1}\beta_3 + u_t, u_t=\rho Wu_t + \varepsilon$$
+
+
+This becomes:
+
+$$Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t-1}\beta_3 - W X_t \rho \beta_1 -WX_{t-1} \rho \beta_3 + \varepsilon$$
+
+```{r}
+fm <- log(gsp) ~ log(pcap) + log(pc) + log(emp) + unemp
+(fmla <- as.formula(fm))
+
+
+moo <- model.frame(fmla, data = Produc)
+lm(moo)
+
+stats::model.frame(formula = Sepal.Width ~ Petal.Width + log(Petal.Length) + Species, 
+                   data = iris, 
+                   subset = Sepal.Length > 6.9, 
+                   drop.unused.levels = TRUE)
+
+lm(moo)
+```
+
+
+#FUNCTION
+
+```{r}
+library(dplyr)
+library(purrr)
+
+spatemperr <- function(formula2, data, listw, type, time=2){
+    if(time==1){
+        warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
+        #TODO: perform regular lagsarlm model
+    }
+    else {
+            formin <- formula2
+        print(formin)
+        #add in temporally lagged response and temporally lagged explanatory variable into formula
+        ##add in time lagged response
+        allvars <- all.vars(formin)
+        y <- allvars[[1]]
+        xs <- allvars[-1]
+        xs_lags <- rep(list(0), (time-1))# rep(NA, (length(xs)*(time-1)))
+        y_lags <- rep(list(0), (time-1))
+        for (i in 1:(time-1)){
+            xs_lags[[i]] <- paste0(xs, "_lag",i)
+            y_lags[[i]] <- paste0(y, "_lag",i)
+        }
+        xs_lags <- as.vector(unlist(xs_lags))
+        y_lags <- as.vector(unlist(y_lags))
+        
+        rhs <- paste(c(xs,xs_lags, y_lags), collapse=" + ")
+        formout <- as.formula(paste0(y," ~ ", rhs))
+        print(formout)
+    }
+
+}
+
+formula2 <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
+spatemperr(formula2, time=4)
+
+```
+
+
+
+```{r}
+#fm <- log(gsp) ~ log(pcap) + log(pc) + log(emp) + unemp
+fm <- gsp_log ~ log(pcap) + log(pc) + log(emp) + unemp
+(fmla <- as.formula(fm))
+
+#spatial lag model
+library(spatialreg)
+Produc1970 <- subset(Produc, year==1970)
+moo2 <- model.frame(fmla, data = Produc1970)
+
+m_spatlag1 <- lagsarlm( log(gsp) ~ log(pcap) + log(pc) + log(emp) + unemp,
+                        data=Produc1970,
+                       listw=usalw, type="lag")
+summary(m_spatlag1)
+
+m_spatlag2 <- lagsarlm(moo2, data=Produc1970,
+                       listw=usalw, type="lag")
+summary(m_spatlag2)
+
+
+##add in temporally lagged response and temporally lagged explanatory variable
+library(dplyr)
+library(purrr)
+#Produc197071 <- subset(Produc, (year==1970 | year==1971))
+prod7071 <- suppressWarnings(Produc %>%
+    dplyr::filter(year==1970|year==1971) %>%
+    dplyr::select(gsp, pcap, pc, emp, unemp,state) %>%
+    tidyr::nest(-state) %>%
+    dplyr::mutate(lags = purrr::map(data, function(dat){
+        purrr::imap_dfc(dat, ~set_names(map(1, lag, x= .x),
+                                     paste0(.y, '_lag',1)))
+    })) %>%
+    tidyr::unnest(cols=c(data,lags)) %>%
+    dplyr::filter(complete.cases(.))) %>%
+#if(isTRUE(log))
+    dplyr::mutate_at(vars(-state), .funs = list(log = ~log(.,2)))
+
+form <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp +
+                            gsp_lag1_log + pcap_lag1_log +
+                            pc_lag1_log + emp_lag1_log + unemp_lag1_log)
+
+m_spatlag3 <- lagsarlm(form,
+                        data=prod7071,
+                       listw=usalw, type="lag")
+summary(m_spatlag3)
+```
+
+
+###Resources
+
+- https://rviews.rstudio.com/2017/02/01/the-r-formula-method-the-good-parts/
+
+#Spatial Panel
+
+
+```{r, eval=FALSE}
+data("Produc", package = "Ecdat")
+data("usaww")
+str(Produc)
+str(usaww)
+
+fm <- log(gsp) ~ log(pcap) + log(pc) + log(emp) + unemp
+usalw <- mat2listw(usaww)
+str(usalw)
+
+
+
+sararremod <- spml(formula = fm, data = Produc, index = NULL, listw = usalw, model = "within", lag = TRUE, spatial.error = "b")
+summary(sararremod)
+
+
+```
+
+
