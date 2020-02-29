@@ -4,7 +4,7 @@
 
 `spatemperr` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). Based on Elhorst 2001, 2003, and 2010a, the approach here fits a spatial error model while incorporating a temporally lagged response variable, temporally lagged explanatory variables, and spatially lagged explanatory variables.
 
-This package builds on the `lagsarlm()` function from the `spatialreg` package.
+This package builds on the `errorsarlm()` function from the `spatialreg` package.
 
 This package is still under development. Please report bugs or constructive tips to issues [here](https://github.com/mkamenet3/spatemperr/issues).
 

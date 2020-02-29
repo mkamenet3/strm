@@ -1,7 +1,7 @@
 #' Spatio-temporal regression model
 #' @title 
 #' spatemperr
-#' @description The \code{spatemperr} function provides maximum likelihood estimation of a spatio-temporal simultaneous autoregressive lag error model. This package is built on the \code{lagsarlm()} function from the \code{spatialreg} package.
+#' @description The \code{spatemperr} function provides maximum likelihood estimation of a spatio-temporal simultaneous autoregressive lag error model. This package is built on the \code{errorsarlm()} function from the \code{spatialreg} package.
 #' @param formula Model formula specified by user (without lags). Any transformed variables, such as logged-variables, must be created outside of this function in the dataframe.
 #' @param id Group identifier (example: state).
 #' @param data Name of dataframe.
@@ -27,10 +27,27 @@ spatemperr <- function(formula, id,data, listw,time=2,trans,...){
     if(time==1){
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
         outdf <- createlagvars(data = data, vars=c(y,xs), id=id, time=1, trans=trans, ...)
+        #add in spatially lagged explanatory variables into formula
+        #vars to NO spatially lag
+        varsnoslag <- names(outdf)[grepl("Tlag",names(outdf), perl=TRUE)]
+        
+        xs_Slags <- as.data.frame(spatialreg::create_WX(as.matrix(outdf[,-which(names(outdf)%in% c(varsnoslag,id))]),
+                                                        
+                                                        listw=usalw, prefix="Slag"))
+        #extract the names
+        Slagvarskeep <- names(xs_Slags)[(sub('.*\\.','', names(xs_Slags)) %in% xs)]
+        #add spatially lagged explanatory vars outdf
+        outdf<- cbind.data.frame(outdf, xs_Slags)
+        
+        #Put formula together
+        rhs <- paste(c(xs, Slagvarskeep), collapse=" + ")
+        formout <- as.formula(paste0(y," ~ ", rhs))
         modframe <- model.frame(formout, data=outdf)
-        #run spatial lag model
-        res<- spatialreg::lagsarlm(modframe, data=outdf,
-                       listw=listw, type="lag")
+        #run spatial error model with spatially lagged explanatory vars
+        message("The spatial regression model fitted: ")
+        print(formout)
+        res<- spatialreg::errorsarlm(modframe, data=outdf,
+                       listw=listw)
     }
     else {
         outdf <- createlagvars(data = data, vars=c(y,xs), id=id, time=time, trans=trans, ...)
