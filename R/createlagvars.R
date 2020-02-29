@@ -9,10 +9,12 @@
 #' @param trans Transformation to be applied. Current implementation allows for \code{"log"}, \code{"sqrt"}, \code{"log10"}, and transformations.
 #' @example 
 #' \donttest{
-#'  res <- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2, trans="log",year==1970 | year==1971)}
+#'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2, trans="log",year==1970 | year==1971)}
 createlagvars <- function(data, vars, id, time=2, trans=NULL, ...){
     filter_args <- rlang::enquos(...)
     keepvars <- c(vars, id)
+    keepvars <- gsub("\\_.*$","",keepvars)
+    #print(keepvars)
     id <- enquo(id)
     time <- time-1
     if(trans=="log"){
@@ -45,14 +47,12 @@ createlagvars <- function(data, vars, id, time=2, trans=NULL, ...){
         tidyr::nest(-!!id) %>%
         dplyr::mutate(lags = purrr::map(data, function(dat){
              purrr::imap_dfc(dat, ~set_names(map(time, lag, x= .x),
-                                             paste0(.y, '_lag',time)))
+                                             paste0('Tlag',time,".",.y)))
+                                             #paste0(.y, '_lag',time)))
          })) %>%
         tidyr::unnest(cols=c(data,lags)) %>%
         dplyr::filter(complete.cases(.)))
     return(outdf)
 }
 
-# res <- createlagvars(data = Produc,
-#                      vars=c(y,xs), id="state", time=1, trans="log",
-#                      year==1970 | year==1971)
 
