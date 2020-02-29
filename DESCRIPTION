@@ -1,5 +1,5 @@
 Package: spatemperr
-Title: Spatio-temporal Lag Model
+Title: Spatio-temporal Regression Model
 Version: 0.1
 Authors@R: person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre"))
 Description:    This package 
