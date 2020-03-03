@@ -1,4 +1,4 @@
-Package: spatemperr
+Package: strm
 Title: Spatio-temporal Regression Model
 Version: 0.1
 Authors@R: person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre"))
@@ -21,7 +21,7 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)
 Maintainer: Maria Kamenetsky <maria.kamenetsky@gmail.com>
-BugReports: https://github.com/mkamenet3/spatemperr/issues
+BugReports: https://github.com/mkamenet3/strm/issues
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 RoxygenNote: 7.0.1

@@ -1,7 +1,7 @@
 #' Spatio-temporal regression model
 #' @title 
-#' spatemperr
-#' @description The \code{spatemperr} function provides maximum likelihood estimation of a spatio-temporal simultaneous autoregressive lag error model. This package is built on the \code{errorsarlm()} function from the \code{spatialreg} package.
+#' strm
+#' @description The \code{strm} function provides maximum likelihood estimation of a spatio-temporal simultaneous autoregressive lag error model. This package is built on the \code{errorsarlm()} function from the \code{spatialreg} package.
 #' @param formula Model formula specified by user (without lags). Any transformed variables, such as logged-variables, must be created outside of this function in the dataframe.
 #' @param id Group identifier (example: state).
 #' @param data Name of dataframe.
@@ -15,8 +15,8 @@
 #' data("usaww")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-#' out <- spatemperr(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)}
-spatemperr <- function(formula, id,data, listw,time=2,trans,...){
+#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)}
+strm <- function(formula, id,data, listw,time=2,trans,...){
     formin <- formula
     if (is.null(trans)){
         trans <- 0

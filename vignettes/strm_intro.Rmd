@@ -1,8 +1,8 @@
 ---
-title: "An Introduction to spatemperr"
+title: "An Introduction to strm"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Intro to spatemperr}
+  %\VignetteIndexEntry{Intro to strm}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -13,11 +13,11 @@ library(tidyverse)
 library(spatialreg)
 ```
 
-`spatemperr` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). Based on Elhorst 2001, 2003, and 2010a, the approach here fits a spatial error model while incorporating a temporally lagged response variable, temporally lagged explanatory variables, and spatially lagged explanatory variables.
+`strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). Based on Elhorst 2001, 2003, and 2010a, the approach here fits a spatial error model while incorporating a temporally lagged response variable, temporally lagged explanatory variables, and spatially lagged explanatory variables.
 
 This package builds on the `errorsarlm()` function from the `spatialreg` package.
 
-This package is still under development. Please report bugs or constructive tips to issues [here](https://github.com/mkamenet3/spatemperr/issues).
+This package is still under development. Please report bugs or constructive tips to issues [here](https://github.com/mkamenet3/strm/issues).
 
 
 #Introduction
@@ -59,14 +59,14 @@ usalw <- mat2listw(usaww)
 str(usalw)
 
 formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-out <- spatemperr(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)
+out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)
 summary(out)
 
 ```
 
 ```{r tester, eval=FALSE, echo=FALSE}
 formula2 <- as.formula( gsp  ~ pcap + pc + emp + unemp)
-out2 <- spatemperr(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
+out2 <- strm(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
 
 ```
 
@@ -148,7 +148,7 @@ Perform spatio-temporal regression model:
 
 ```{r}
 formula <- as.formula(LNP ~ POLD)
-res <- spatemperr(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
+res <- strm(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
 
 ```
 
