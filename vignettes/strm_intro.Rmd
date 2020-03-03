@@ -9,8 +9,20 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 8, message = TRUE, warning = FALSE)
-library(tidyverse)
+library(rmarkdown)
+#load strm
+library(strm)
+
+#load package dependencies for the vignette
+library(tidyr)
+library(dplyr)
+library(rgdal)
 library(spatialreg)
+library(spdep)
+library(sf)
+library(splm)
+library(knitr)
+library(Ecdat)
 ```
 
 `strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). Based on Elhorst 2001, 2003, and 2010a, the approach here fits a spatial error model while incorporating a temporally lagged response variable, temporally lagged explanatory variables, and spatially lagged explanatory variables.
@@ -47,7 +59,7 @@ $$Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t
 
 ```{r}
 #load data example
-data("Produc", package = "Ecdat")
+data("Produc")
 data("usaww")
 
 #explore the data structures
@@ -56,19 +68,14 @@ str(usaww)
 
 #create list of spatial weights
 usalw <- mat2listw(usaww)
-str(usalw)
+class(usalw)
 
 formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)
+out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",wide=FALSE,year==1970 | year==1971)
 summary(out)
 
 ```
 
-```{r tester, eval=FALSE, echo=FALSE}
-formula2 <- as.formula( gsp  ~ pcap + pc + emp + unemp)
-out2 <- strm(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
-
-```
 
 
 ##Example 2: Minor Civil Divisions in Wisconsin
@@ -78,8 +85,7 @@ out2 <- strm(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,
 There are two years of data: 2000 and 2010.
 
 ```{r}
-library(rgdal)
-sptdmg <- readOGR("../data/sptdmg3/.", "sptdmg3")
+sptdmg <- readOGR("../inst/extdata/sptdmg3/.", "sptdmg3")
 class(sptdmg)
 names(sptdmg)
 ```
@@ -88,52 +94,27 @@ names(sptdmg)
 First, fit a standard linear regression model with population growth from 2000 to 2010 as the response variable and population growth from 1990 to 2000, the old population in 2000, and the old population in 1990 as the explanatory variables.
 
 ```{r}
-m1 <- lm(LNP1000 ~ LNP0090 + POLD00 + POLD90, data = sptdmg)
-summary(m1)
-```
-
-Convert to long format (**TODO: FIX THIS**)
-
-```{r}
-#convert spatial polygons dataframe to sf to work with tidyverse
-library(sf)
-sptdmg_sf <- sf::st_as_sf(sptdmg)
-
-sptdmg_long <- sptdmg_sf %>%
-    dplyr::select(FIRST_NA_1, LNP1000, LNP0090, POLD00, POLD90) %>%
-    tidyr::gather(year, POLD, POLD00:POLD90, factor_key=TRUE )
-
-# 
-# sptdmg_long1  <- sptdmg_sf %>%
-#     dplyr::select(FIRST_NA_1, LNP1000, LNP0090, POLD00, POLD90) %>%
-#     gather(year1, POLD,POLD00:POLD90) %>%
-#     gather(year2, LNP, LNP1000:LNP0090) %>%
-#     mutate(year = recode_factor(year2, `LNP1000`="year1",`LNP0090`= "year2")) %>%
-#     arrange(FIRST_NA_1)
-
-sptdmg_long1  <- sptdmg_sf %>%
-    dplyr::select(FIRST_NA_1,  POLD00, POLD90) %>%
-    gather(year1, POLD,POLD00:POLD90) %>%
-    arrange(FIRST_NA_1)
-sptdmg_long2  <- sptdmg_sf %>%
-    dplyr::select(FIRST_NA_1, LNP1000, LNP0090) %>%
-    gather(year2, LNP, LNP1000:LNP0090) %>%
-    arrange(FIRST_NA_1)
-
-sptdmg_long <- cbind.data.frame(sptdmg_long1, sptdmg_long2)   
-
-m2 <- lm(LNP ~ POLD + year1, data=sptdmg_long)
+formula <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
+m2 <- lm(formula, data = sptdmg)
 summary(m2)
+
 ```
 
 
 
 Create spatial weights matrix based on 4-nearest neighbors:
 
+
+
 ```{r}
+#convert to simple features
+sptdmg_sf <- sf::st_as_sf(sptdmg)
+class(sptdmg_sf)
+
+#attempt with sf
 nb.poly <- poly2nb(sptdmg, row.names=row.names(sptdmg))
 listw <- nb2listw(nb.poly, style="W", zero.policy = TRUE)
-coords <- coordinates(sptdmg)
+coords <-st_coordinates(st_centroid(sptdmg_sf)) #extract centroid of each  minor civil division
 plot(sptdmg, main="Wisconsin: Second-Order Neighbors");
 plot(nb.poly, coords, col="blue", add=TRUE)
 
@@ -144,12 +125,14 @@ listwk <- nb2listw(nbknn, style="W", zero.policy = TRUE)
 plot(sptdmg, main="Wisconsin: 4 Nearest-Neighbors"); plot(nbknn, coords,col="forestgreen", add=TRUE)
 ```
 
+
 Perform spatio-temporal regression model:
 
 ```{r}
-formula <- as.formula(LNP ~ POLD)
-res <- strm(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
-
+id <- "STFID"
+#since this data is in wide format, include temporal lag for both explanatory and response variable manually
+res <- strm(formula, id=id, data=sptdmg_sf, listw= listwk, time=2,trans=NULL,wide=TRUE)
+summary(res)
 ```
 
 
