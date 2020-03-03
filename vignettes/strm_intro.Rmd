@@ -11,6 +11,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 8, message = TRUE, warning = FALSE)
 library(tidyverse)
 library(spatialreg)
+library(sf)
 
 ```
 
@@ -89,16 +90,17 @@ names(sptdmg)
 First, fit a standard linear regression model with population growth from 2000 to 2010 as the response variable and population growth from 1990 to 2000, the old population in 2000, and the old population in 1990 as the explanatory variables.
 
 ```{r}
-m1 <- lm(LNP1000 ~ LNP0090 + POLD00 + POLD90, data = sptdmg)
-summary(m1)
+formula2 <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
+m2 <- lm(LNP1000 ~ LNP0090 + POLD00 + POLD90, data = sptdmg)
+summary(m2)
 ```
 
 Convert to long format (**TODO: FIX THIS**)
 
-```{r}
+```{r, echo=FALSE, eval=FALSE}
 #convert spatial polygons dataframe to sf to work with tidyverse
 library(sf)
-sptdmg_sf <- sf::st_as_sf(sptdmg)
+
 
 sptdmg_long <- sptdmg_sf %>%
     dplyr::select(FIRST_NA_1, LNP1000, LNP0090, POLD00, POLD90) %>%
@@ -131,10 +133,17 @@ summary(m2)
 
 Create spatial weights matrix based on 4-nearest neighbors:
 
+
+
 ```{r}
+#convert to simple features
+sptdmg_sf <- sf::st_as_sf(sptdmg)
+class(sptdmg_sf)
+
+#attempt with sf
 nb.poly <- poly2nb(sptdmg, row.names=row.names(sptdmg))
 listw <- nb2listw(nb.poly, style="W", zero.policy = TRUE)
-coords <- coordinates(sptdmg)
+coords <-st_coordinates(st_centroid(sptdmg_sf)) #extract centroid of each  minor civil division
 plot(sptdmg, main="Wisconsin: Second-Order Neighbors");
 plot(nb.poly, coords, col="blue", add=TRUE)
 
@@ -145,11 +154,22 @@ listwk <- nb2listw(nbknn, style="W", zero.policy = TRUE)
 plot(sptdmg, main="Wisconsin: 4 Nearest-Neighbors"); plot(nbknn, coords,col="forestgreen", add=TRUE)
 ```
 
+
 Perform spatio-temporal regression model:
 
 ```{r}
-formula <- as.formula(LNP ~ POLD)
-res <- strm(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
+library(sf)
+sptdmg_sf <- sf::st_as_sf(sptdmg)
+
+id <- "FIRST_NA_1"
+outdf <- createlagvars(data = sptdmg_sf, vars=c(y,xs), id=id, time=time, trans=0)
+
+
+
+
+
+formula <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
+res <- strm(formula, id="FIRST_NA_1", data=sptdmg_long, listw= listwk, time=2,trans=NULL,wide=TRUE)
 
 ```
 
