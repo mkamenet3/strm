@@ -9,8 +9,13 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 8, message = TRUE, warning = FALSE)
+#load strm
+library(strm)
+
+#load package dependencies for the vignette
 library(tidyverse)
 library(spatialreg)
+library(spdep)
 library(sf)
 
 ```
