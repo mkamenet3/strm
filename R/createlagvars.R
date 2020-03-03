@@ -15,8 +15,8 @@
 #'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2, trans="log",year==1970 | year==1971)}
 createlagvars <- function(data, vars, id, time=2, trans, wide, ...){
     filter_args <- rlang::enquos(...)
-    keepvars <- c(vars, rlang:::as_name(id))
-    id <- enquo(id)
+    keepvars <- c(vars, rlang::as_name(id))
+    id <- rlang::enquo(id)
     time <- time-1
     if(trans=="log"){
         keepvars <- gsub("\\_.*$","",keepvars)
@@ -48,10 +48,11 @@ createlagvars <- function(data, vars, id, time=2, trans, wide, ...){
         stop(paste0("Your selected transformation, ",trans, " is not yet implemented. Please create an issue."))
     } 
     if (wide == FALSE){
+        lags <- NULL
         outdf <- suppressWarnings(outdf%>%
             tidyr::nest(-!!id) %>%
             dplyr::mutate(lags = purrr::map(data, function(dat){
-                 purrr::imap_dfc(dat, ~set_names(map(time, lag, x= .x),
+                 purrr::imap_dfc(dat, ~purrr::set_names(purrr::map(time, lag, x= .x),
                                                  paste0('Tlag',time,".",.y)))
              })) %>%
             tidyr::unnest(cols=c(data,lags)) %>%

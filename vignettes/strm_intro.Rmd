@@ -9,16 +9,20 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 8, message = TRUE, warning = FALSE)
+library(rmarkdown)
 #load strm
 library(strm)
 
 #load package dependencies for the vignette
-library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(rgdal)
 library(spatialreg)
 library(spdep)
 library(sf)
 library(splm)
-
+library(knitr)
+library(Ecdat)
 ```
 
 `strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). Based on Elhorst 2001, 2003, and 2010a, the approach here fits a spatial error model while incorporating a temporally lagged response variable, temporally lagged explanatory variables, and spatially lagged explanatory variables.
@@ -55,8 +59,8 @@ $$Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t
 
 ```{r}
 #load data example
-data("Produc", package = "Ecdat")
-data("usaww", package = "splm")
+data("Produc")
+data("usaww")
 
 #explore the data structures
 str(Produc)
@@ -81,8 +85,7 @@ summary(out)
 There are two years of data: 2000 and 2010.
 
 ```{r}
-library(rgdal)
-sptdmg <- readOGR("../data/sptdmg3/.", "sptdmg3")
+sptdmg <- readOGR("../inst/extdata/sptdmg3/.", "sptdmg3")
 class(sptdmg)
 names(sptdmg)
 ```

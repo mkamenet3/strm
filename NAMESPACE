@@ -2,3 +2,5 @@
 
 export(createlagvars)
 export(strm)
+importFrom(magrittr, "%>%")
+importFrom("stats", "as.formula", "complete.cases", "model.frame")
