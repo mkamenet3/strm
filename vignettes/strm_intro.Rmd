@@ -17,6 +17,7 @@ library(tidyverse)
 library(spatialreg)
 library(spdep)
 library(sf)
+library(splm)
 
 ```
 
@@ -63,7 +64,7 @@ str(usaww)
 
 #create list of spatial weights
 usalw <- mat2listw(usaww)
-str(usalw)
+class(usalw)
 
 formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
 out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",wide=FALSE,year==1970 | year==1971)
@@ -71,11 +72,6 @@ summary(out)
 
 ```
 
-```{r tester, eval=FALSE, echo=FALSE}
-formula2 <- as.formula( gsp  ~ pcap + pc + emp + unemp)
-out2 <- strm(formula2, id="state", data=Produc, listw= usalw, time=2,trans=NULL,year==1970 | year==1971)
-
-```
 
 
 ##Example 2: Minor Civil Divisions in Wisconsin
@@ -132,8 +128,8 @@ Perform spatio-temporal regression model:
 ```{r}
 id <- "STFID"
 #since this data is in wide format, include temporal lag for both explanatory and response variable manually
-res <- strm(formula, id=id, data=sptdmg_long, listw= listwk, time=2,trans=NULL,wide=TRUE)
-
+res <- strm(formula, id=id, data=sptdmg_sf, listw= listwk, time=2,trans=NULL,wide=TRUE)
+summary(res)
 ```
 
 

@@ -14,27 +14,26 @@
 #' \donttest{
 #'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2, trans="log",year==1970 | year==1971)}
 createlagvars <- function(data, vars, id, time=2, trans, wide, ...){
-    print(1)
     filter_args <- rlang::enquos(...)
-    # keepvars <- c(vars, id)
-    # keepvars <- gsub("\\_.*$","",keepvars)
-    #print(keepvars)
+    keepvars <- c(vars, rlang:::as_name(id))
     id <- enquo(id)
-    print(2)
     time <- time-1
     if(trans=="log"){
+        keepvars <- gsub("\\_.*$","",keepvars)
         outdf <- data %>%
             dplyr::filter(!!!filter_args) %>%
             dplyr::select(!!keepvars) %>% 
             dplyr::mutate_at(vars(-!!id), .funs = list(log = ~log(.)))
     }
     else if (trans=="sqrt"){
+        keepvars <- gsub("\\_.*$","",keepvars)
         outdf <- data %>%
             dplyr::filter(!!!filter_args) %>%
             dplyr::select(!!keepvars) %>% 
             dplyr::mutate_at(vars(-!!id), .funs = list(sqrt = ~sqrt(.)))
     }
     else if (trans=="log10"){
+        keepvars <- gsub("\\_.*$","",keepvars)
         outdf <- data %>%
             dplyr::filter(!!!filter_args) %>%
             dplyr::select(!!keepvars) %>% 
@@ -42,11 +41,6 @@ createlagvars <- function(data, vars, id, time=2, trans, wide, ...){
     } 
     else if(trans==0){
         message("No transformations")
-        print(vars)
-        print(rlang::as_name(id))
-        keepvars <- c(vars, rlang::as_name(id))
-        print(keepvars)
-        #keepvars <- gsub("\\_.*$","",keepvars)
         outdf <- data %>%
             dplyr::filter(!!!filter_args) %>%
             dplyr::select(!!keepvars)
@@ -59,7 +53,6 @@ createlagvars <- function(data, vars, id, time=2, trans, wide, ...){
             dplyr::mutate(lags = purrr::map(data, function(dat){
                  purrr::imap_dfc(dat, ~set_names(map(time, lag, x= .x),
                                                  paste0('Tlag',time,".",.y)))
-                                                 #paste0(.y, '_lag',time)))
              })) %>%
             tidyr::unnest(cols=c(data,lags)) %>%
             dplyr::filter(complete.cases(.)))

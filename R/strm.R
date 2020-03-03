@@ -30,7 +30,6 @@ strm <- function(formula, id,data, listw,time=2,trans,wide=FALSE,...){
         message("Data is in wide format. strm assumes you include the temporally-lagged explanatory variables manually.")
         wide <- wide
     }
-    print(paste0("Dat format: ", wide))
     allvars <- all.vars(formin)
     y <- allvars[[1]]
     xs <- allvars[-1]
@@ -62,6 +61,7 @@ strm <- function(formula, id,data, listw,time=2,trans,wide=FALSE,...){
             #Put formula together
             rhs <- paste(c(xs,xs_Tlags, y_lags), collapse=" + ")
         } else {
+            outdf <- data
             #Put formula together
             rhs <- paste(c(xs), collapse=" + ")
         }
