@@ -1,7 +1,7 @@
 #' Create lagged and transformed variables 
 #' @title 
 #' createlagvars
-#' @description
+#' @description Creates lagged explanatory and response variables for data in long format.
 #' @param data Name of dataframe.
 #' @param vars Response and explanatory variables to be lagged.
 #' @param id Group identifier (example: state).
@@ -9,7 +9,7 @@
 #' @param trans Transformation to be applied. Current implementation allows for \code{"log"}, \code{"sqrt"}, \code{"log10"}, and transformations.
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. Default is \code{FALSE}.
 #' @param ... Arguments to be passed to \code{dplyr::filter()}
-#' @example 
+#' @examples 
 #' \donttest{
 #'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2, trans="log",year==1970 | year==1971)}
 createlagvars <- function(data, vars, id, time=2, trans, wide, ...){

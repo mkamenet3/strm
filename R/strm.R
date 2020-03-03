@@ -11,7 +11,7 @@
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.
 #' @param ... Arguments to be passed to \code{dplyr::filter()}.
 #' @details Any transformed variables should be included in the formula statement as \code{variablename_transf}, where the transformation is indicated by an underscore \code{_} followed by a short name for the transformation. For example, to request \code{gdp} log-transformed, you would build the model formula as \code{gdp_log}.
-#' @example 
+#' @examples 
 #' \donttest{
 #' data("Produc", package = "Ecdat")
 #' data("usaww")

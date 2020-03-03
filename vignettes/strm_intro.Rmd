@@ -90,43 +90,10 @@ names(sptdmg)
 First, fit a standard linear regression model with population growth from 2000 to 2010 as the response variable and population growth from 1990 to 2000, the old population in 2000, and the old population in 1990 as the explanatory variables.
 
 ```{r}
-formula2 <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
-m2 <- lm(LNP1000 ~ LNP0090 + POLD00 + POLD90, data = sptdmg)
+formula <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
+m2 <- lm(formula, data = sptdmg)
 summary(m2)
-```
 
-Convert to long format (**TODO: FIX THIS**)
-
-```{r, echo=FALSE, eval=FALSE}
-#convert spatial polygons dataframe to sf to work with tidyverse
-library(sf)
-
-
-sptdmg_long <- sptdmg_sf %>%
-    dplyr::select(FIRST_NA_1, LNP1000, LNP0090, POLD00, POLD90) %>%
-    tidyr::gather(year, POLD, POLD00:POLD90, factor_key=TRUE )
-
-# 
-# sptdmg_long1  <- sptdmg_sf %>%
-#     dplyr::select(FIRST_NA_1, LNP1000, LNP0090, POLD00, POLD90) %>%
-#     gather(year1, POLD,POLD00:POLD90) %>%
-#     gather(year2, LNP, LNP1000:LNP0090) %>%
-#     mutate(year = recode_factor(year2, `LNP1000`="year1",`LNP0090`= "year2")) %>%
-#     arrange(FIRST_NA_1)
-
-sptdmg_long1  <- sptdmg_sf %>%
-    dplyr::select(FIRST_NA_1,  POLD00, POLD90) %>%
-    gather(year1, POLD,POLD00:POLD90) %>%
-    arrange(FIRST_NA_1)
-sptdmg_long2  <- sptdmg_sf %>%
-    dplyr::select(FIRST_NA_1, LNP1000, LNP0090) %>%
-    gather(year2, LNP, LNP1000:LNP0090) %>%
-    arrange(FIRST_NA_1)
-
-sptdmg_long <- cbind.data.frame(sptdmg_long1, sptdmg_long2)   
-
-m2 <- lm(LNP ~ POLD + year1, data=sptdmg_long)
-summary(m2)
 ```
 
 
@@ -159,9 +126,7 @@ Perform spatio-temporal regression model:
 
 ```{r}
 id <- "STFID"
-
 #since this data is in wide format, include temporal lag for both explanatory and response variable manually
-formula <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
 res <- strm(formula, id=id, data=sptdmg_long, listw= listwk, time=2,trans=NULL,wide=TRUE)
 
 ```
