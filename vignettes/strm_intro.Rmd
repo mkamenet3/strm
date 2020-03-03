@@ -158,18 +158,11 @@ plot(sptdmg, main="Wisconsin: 4 Nearest-Neighbors"); plot(nbknn, coords,col="for
 Perform spatio-temporal regression model:
 
 ```{r}
-library(sf)
-sptdmg_sf <- sf::st_as_sf(sptdmg)
+id <- "STFID"
 
-id <- "FIRST_NA_1"
-outdf <- createlagvars(data = sptdmg_sf, vars=c(y,xs), id=id, time=time, trans=0)
-
-
-
-
-
+#since this data is in wide format, include temporal lag for both explanatory and response variable manually
 formula <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
-res <- strm(formula, id="FIRST_NA_1", data=sptdmg_long, listw= listwk, time=2,trans=NULL,wide=TRUE)
+res <- strm(formula, id=id, data=sptdmg_long, listw= listwk, time=2,trans=NULL,wide=TRUE)
 
 ```
 
