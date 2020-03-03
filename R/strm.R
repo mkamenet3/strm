@@ -27,20 +27,18 @@ strm <- function(formula, id,data, listw,time=2,trans,...){
     if(time==1){
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
         outdf <- createlagvars(data = data, vars=c(y,xs), id=id, time=1, trans=trans, ...)
-        #add in spatially lagged explanatory variables into formula
-        #vars to NO spatially lag
-        varsnoslag <- names(outdf)[grepl("Tlag",names(outdf), perl=TRUE)]
+        #varsnoslag <- names(outdf)[grepl("Tlag",names(outdf), perl=TRUE)]
         
-        xs_Slags <- as.data.frame(spatialreg::create_WX(as.matrix(outdf[,-which(names(outdf)%in% c(varsnoslag,id))]),
-                                                        
-                                                        listw=usalw, prefix="Slag"))
-        #extract the names
-        Slagvarskeep <- names(xs_Slags)[(sub('.*\\.','', names(xs_Slags)) %in% xs)]
-        #add spatially lagged explanatory vars outdf
-        outdf<- cbind.data.frame(outdf, xs_Slags)
-        
+        # xs_Slags <- as.data.frame(spatialreg::create_WX(as.matrix(outdf[,-which(names(outdf)%in% c(varsnoslag,id))]),
+        #                                                 
+        #                                                 listw=usalw, prefix="Slag"))
+        # #extract the names
+        # Slagvarskeep <- names(xs_Slags)[(sub('.*\\.','', names(xs_Slags)) %in% xs)]
+        # #add spatially lagged explanatory vars outdf
+        # outdf<- cbind.data.frame(outdf, xs_Slags)
+        # 
         #Put formula together
-        rhs <- paste(c(xs, Slagvarskeep), collapse=" + ")
+        rhs <- paste(c(xs), collapse=" + ")
         formout <- as.formula(paste0(y," ~ ", rhs))
         modframe <- model.frame(formout, data=outdf)
         #run spatial error model with spatially lagged explanatory vars
@@ -60,20 +58,20 @@ strm <- function(formula, id,data, listw,time=2,trans,...){
         }
         xs_Tlags <- as.vector(unlist(xs_Tlags))
         y_lags <- as.vector(unlist(y_lags))
-        #add in spatially lagged explanatory variables into formula
-        #vars to NO spatially lag
-        varsnoslag <- names(outdf)[grepl("Tlag",names(outdf), perl=TRUE)]
         
-        xs_Slags <- as.data.frame(spatialreg::create_WX(as.matrix(outdf[,-which(names(outdf)%in% c(varsnoslag,id))]),
-                                                        
-                                                        listw=usalw, prefix="Slag"))
-        #extract the names
-        Slagvarskeep <- names(xs_Slags)[(sub('.*\\.','', names(xs_Slags)) %in% xs)]
-        #add spatially lagged explanatory vars outdf
-        outdf<- cbind.data.frame(outdf, xs_Slags)
+        #vars to NO spatially lag
+        # varsnoslag <- names(outdf)[grepl("Tlag",names(outdf), perl=TRUE)]
+        # 
+        # xs_Slags <- as.data.frame(spatialreg::create_WX(as.matrix(outdf[,-which(names(outdf)%in% c(varsnoslag,id))]),
+        #                                                 
+        #                                                 listw=usalw, prefix="Slag"))
+        # #extract the names
+        # Slagvarskeep <- names(xs_Slags)[(sub('.*\\.','', names(xs_Slags)) %in% xs)]
+        # #add spatially lagged explanatory vars outdf
+        #outdf<- cbind.data.frame(outdf, xs_Slags)
   
         #Put formula together
-        rhs <- paste(c(xs,xs_Tlags, Slagvarskeep,y_lags), collapse=" + ")
+        rhs <- paste(c(xs,xs_Tlags, y_lags), collapse=" + ")
         formout <- as.formula(paste0(y," ~ ", rhs))
         message("The spatio-temporal regression model fitted: ")
         print(formout)
