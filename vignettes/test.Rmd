@@ -81,7 +81,7 @@ lm(moo)
 library(dplyr)
 library(purrr)
 
-spatemperr <- function(formula2, data, listw, type, time=2){
+strm <- function(formula2, data, listw, type, time=2){
     if(time==1){
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
         #TODO: perform regular lagsarlm model
@@ -111,7 +111,7 @@ spatemperr <- function(formula2, data, listw, type, time=2){
 }
 
 formula2 <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-spatemperr(formula2, time=4)
+strm(formula2, time=4)
 
 ```
 
