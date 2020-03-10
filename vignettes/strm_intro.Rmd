@@ -70,12 +70,63 @@ str(usaww)
 usalw <- mat2listw(usaww)
 class(usalw)
 
-formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",wide=FALSE,year==1970 | year==1971)
+
+
+formula1 <-as.formula(log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+out <- strm(formula1, id="state", data=Produc, listw= usalw, time=2,wide=FALSE,year==1970 | year==1971)
 summary(out)
 
 ```
 
+With three years (2 lags)
+
+```{r}
+formula2 <-as.formula(log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+out <- strm(formula2, id="state", data=Produc, listw= usalw, time=3,
+            wide=FALSE,year==1970 | year==1971 | year ==1972)
+summary(out)
+
+```
+
+
+
+```{r testerissue1, eval=FALSE, echo=FALSE}
+data("Produc")
+data("usaww")
+
+#explore the data structures
+str(Produc)
+str(usaww)
+
+#create list of spatial weights
+usalw <- mat2listw(usaww)
+class(usalw)
+
+
+formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+
+xvars  <- c(log(pcap),log(pc),log(emp), unemp)
+out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,wide=FALSE,year==1970 | year==1971)
+summary(out)
+
+producsub <- subset(Produc, year==1970 | year==1971)
+
+
+form1 <-as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,wide=FALSE,year==1970 | year==1971)
+summary(out)
+
+# 
+# modf1 <- model.frame(form1, data=Produc)
+# moo <- lm(modf1)
+# summary(moo)
+
+
+producsub <- subset(Produc,year==1970 | year==1971 | year ==1972)
+time = 3; data=producsub; wide <- FALSE
+
+
+```
 
 
 ##Example 2: Minor Civil Divisions in Wisconsin
@@ -134,9 +185,6 @@ id <- "STFID"
 res <- strm(formula, id=id, data=sptdmg_sf, listw= listwk, time=2,trans=NULL,wide=TRUE)
 summary(res)
 ```
-
-
-
 
 
 
