@@ -7,19 +7,17 @@
 #' @param data Name of dataframe.
 #' @param listw Weights list object.
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
-#' @param trans Transformation to be applied. Current implementation allows for \code{"log"}, \code{"sqrt"}, \code{"log10"}, and transformations.
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.
 #' @param ... Arguments to be passed to \code{dplyr::filter()}.
 #' @details Any transformed variables should be included in the formula statement as \code{variablename_transf}, where the transformation is indicated by an underscore \code{_} followed by a short name for the transformation. For example, to request \code{gdp} log-transformed, you would build the model formula as \code{gdp_log}.
 #' @export
 #' @examples 
-#' \donttest{
 #' data("Produc", package = "Ecdat")
 #' data("usaww")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)}
-strm <- function(formula, id,data, listw,time=2,trans,wide=FALSE,...){
+#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,year==1970 | year==1971)
+strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
     formin <- formula
     if (is.null(trans)){
         trans <- 0
@@ -43,8 +41,10 @@ strm <- function(formula, id,data, listw,time=2,trans,wide=FALSE,...){
         #run spatial error model with spatially lagged explanatory vars
         message("The spatial regression model fitted: ")
         print(formout)
-        res<- spatialreg::errorsarlm(modframe, data=outdf,
-                       listw=listw)
+        # res<- spatialreg::errorsarlm(modframe, data=outdf,
+        #                listw=listw)
+        res<- spatialreg::errorsarlm(modframe,
+                                     listw=listw)
     }
     else {
         if (wide==FALSE){
@@ -70,8 +70,10 @@ strm <- function(formula, id,data, listw,time=2,trans,wide=FALSE,...){
         print(formout)
         modframe <- model.frame(formout, data=outdf)
         #run ST regression model
-        res<- spatialreg::errorsarlm(modframe, data=outdf,
-                                   listw=listw)
+        # res<- spatialreg::errorsarlm(modframe, data=outdf,
+        #                            listw=listw)
+        res<- spatialreg::errorsarlm(modframe, 
+                                     listw=listw)
         
     }
     return(res)
