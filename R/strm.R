@@ -22,22 +22,16 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
     if(missing(wide) | wide == FALSE){
         wide <- FALSE
     } else {
-        message("Data is in wide format. strm assumes you include the temporally-lagged explanatory variables manually.")
+        warning("Data is in wide format. strm assumes you include the temporally-lagged explanatory variables manually.")
         wide <- wide
     }
-    #print("a")
     y <- deparse(formula(formin)[[2]])
-    #print("b")
     xs <- attributes(terms(formin))$term.labels
     #combine transformed data frame with original dataframe (so any other filtering can be passed to createlagvars)
-    #print("c")
     modframe0 <- cbind.data.frame(model.frame(formin, data=data),  data[,which(names(data)%in% c(y,xs)==FALSE)])
-    print(str(modframe0))
     if(time==1){
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
-        print(c(y,xs))
         outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=1,  wide,...)
-        #print(str(outdf))
         #Put formula together
         rhs <- paste(c(xs), collapse=" + ")
         #clean out any transformed variable names
@@ -52,7 +46,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
         message("The spatio-temporal regression model fitted:")
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
-        #print(str(modframe))
         res<- spatialreg::errorsarlm(modframe,
                                      listw=listw)
     }
@@ -72,6 +65,7 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
             rhs <- paste(c(xs,xs_Tlags, y_lags), collapse=" + ")
         } else {
             outdf <- data
+            outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=time,wide, ...)
             #Put formula together
             rhs <- paste(c(xs), collapse=" + ")
         }

@@ -1,4 +1,5 @@
 library(testthat)
+library(tidyr)
 context("Executing the spatio-temporal regression model, strm.")
 #set up
 set.seed(2)
@@ -11,6 +12,11 @@ year <- rep(c(2000,2005), times=50)
 datf <- cbind.data.frame(y, x1, x2,id,year)
 nb0 <- cell2nb(nrow=10,ncol=5, type="queen")
 listw0 <- nb2listw(nb0, style="W")
+#wide format
+datf_wide <- datf %>% tidyr::pivot_wider(names_from = c(year),
+                                values_from = c(y,x1,x2))
+nb1 <- cell2nb(nrow=5,ncol=10, type="queen")
+listw1 <- nb2listw(nb1, style="W")
 
 
 
@@ -41,5 +47,15 @@ test_that("time=1 warning", {
     datfsub<-subset(datf, year==2000)
     expect_warning(strm(form0, id="id", data=datfsub, listw = listw0,
                       time=1, wide=FALSE))
+})
+
+test_that("Wide format", {
+    form1 <- as.formula(y_2005 ~ x1_2000 + x1_2005 + x2_2000 + x2_2005 + y_2000)
+    expect_error(strm(form1, id="id", data=datf_wide, listw = listw1,
+                      time=2, wide=TRUE), NA)
+    expect_warning(strm(form1, id="id", data=datf_wide, listw = listw1,
+                      time=2, wide=TRUE))
+    #this should give an error because size of list
+    expect_error(strm(form1, id="id", data = datf_wide, listw = listw1, time=2, wide=TRUE, id > 10))
 })
 

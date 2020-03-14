@@ -13,7 +13,6 @@
 #' \donttest{
 #'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,year==1970 | year==1971)}
 createlagvars <- function(data, vars, id, time=time, wide, ...){
-    #print(paste0("time: ",time))
     filter_args <- rlang::enquos(...)
     keepvars <- c(vars, rlang::as_name(id))
     id <- rlang::enquo(id)
@@ -24,8 +23,6 @@ createlagvars <- function(data, vars, id, time=time, wide, ...){
     
     if (wide == FALSE){
         if(time>1){
-            print("time >1")    
-            
             lags <- NULL
             outdf <- suppressWarnings(outdf%>%
                                           tidyr::nest(-!!id) %>%
