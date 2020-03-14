@@ -2,59 +2,62 @@
 #' @title 
 #' strm
 #' @description The \code{strm} function provides maximum likelihood estimation of a spatio-temporal simultaneous autoregressive lag error model. This package is built on the \code{errorsarlm()} function from the \code{spatialreg} package.
-#' @param formula Model formula specified by user (without lags). Any transformed variables, such as logged-variables, must be created outside of this function in the dataframe.
+#' @param formula Model formula specified by user (without lags). Any transformed variables, such as logged-variables, should be specified in the model formula.
 #' @param id Group identifier (example: state).
 #' @param data Name of dataframe.
 #' @param listw Weights list object.
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
-#' @param trans Transformation to be applied. Current implementation allows for \code{"log"}, \code{"sqrt"}, \code{"log10"}, and transformations.
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.
 #' @param ... Arguments to be passed to \code{dplyr::filter()}.
-#' @details Any transformed variables should be included in the formula statement as \code{variablename_transf}, where the transformation is indicated by an underscore \code{_} followed by a short name for the transformation. For example, to request \code{gdp} log-transformed, you would build the model formula as \code{gdp_log}.
+#' @details Any transformed variables should be included in the formula statement. For example, to request \code{gdp} natural log-transformed, you would build the model formula as \code{log(gdp)}.
 #' @export
 #' @examples 
-#' \donttest{
 #' data("Produc", package = "Ecdat")
 #' data("usaww")
 #' usalw <- mat2listw(usaww)
-#' formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)}
-strm <- function(formula, id,data, listw,time=2,trans,wide=FALSE,...){
+#' formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,year==1970 | year==1971)
+strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
     formin <- formula
-    if (is.null(trans)){
-        trans <- 0
-    }
     if(missing(wide) | wide == FALSE){
         wide <- FALSE
     } else {
         message("Data is in wide format. strm assumes you include the temporally-lagged explanatory variables manually.")
         wide <- wide
     }
-    allvars <- all.vars(formin)
-    y <- allvars[[1]]
-    xs <- allvars[-1]
+    y <- deparse(formula(formin)[[2]])
+    xs <- attributes(terms(formin))$term.labels
+    #combine transformed data frame with original dataframe (so any other filtering can be passed to createlagvars)
+    modframe0 <- cbind.data.frame(model.frame(formin, data=data),  data[,which(names(data)%in% c(y,xs)==FALSE)])
     if(time==1){
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
-        outdf <- createlagvars(data = data, vars=c(y,xs), id=id, time=1, trans=trans, wide,...)
+        outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=1,  wide,...)
         #Put formula together
         rhs <- paste(c(xs), collapse=" + ")
+        #clean out any transformed variable names
+        outdfnames <- names(outdf)
+        outdfnamesclean <- gsub("*\\(*)*","",outdfnames)
+        names(outdf) <- outdfnamesclean
+        y <- gsub("*\\(*)*","",y)
+        rhs <- gsub("*\\(*)*","",rhs)
+        
         formout <- as.formula(paste0(y," ~ ", rhs))
-        modframe <- model.frame(formout, data=outdf)
         #run spatial error model with spatially lagged explanatory vars
         message("The spatial regression model fitted: ")
         print(formout)
-        res<- spatialreg::errorsarlm(modframe, data=outdf,
-                       listw=listw)
+        modframe <- model.frame(formout, data=outdf)
+        res<- spatialreg::errorsarlm(modframe,
+                                     listw=listw)
     }
     else {
         if (wide==FALSE){
-            outdf <- createlagvars(data = data, vars=c(y,xs), id=id, time=time, trans=trans,wide, ...)
+            outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=time,wide, ...)
             #add in temporally lagged response and temporally lagged explanatory variable into formula
             xs_Tlags <- rep(list(0), (time-1))
             y_lags <- rep(list(0), (time-1))
             for (i in 1:(time-1)){
-                xs_Tlags[[i]] <- paste0("Tlag",i, ".",xs)
-                y_lags[[i]] <- paste0("Tlag",i, ".",y)
+                xs_Tlags[[i]] <- paste0(xs,".","Tlag",i)
+                y_lags[[i]] <- paste0(y,".","Tlag",i)
             }
             xs_Tlags <- as.vector(unlist(xs_Tlags))
             y_lags <- as.vector(unlist(y_lags))
@@ -65,13 +68,19 @@ strm <- function(formula, id,data, listw,time=2,trans,wide=FALSE,...){
             #Put formula together
             rhs <- paste(c(xs), collapse=" + ")
         }
+        #clean out any transformed variable names
+        outdfnames <- names(outdf)
+        outdfnamesclean <- gsub("*\\(*)*","",outdfnames)
+        names(outdf) <- outdfnamesclean
+        y <- gsub("*\\(*)*","",y)
+        rhs <- gsub("*\\(*)*","",rhs)
+    
         formout <- as.formula(paste0(y," ~ ", rhs))
         message("The spatio-temporal regression model fitted: ")
         print(formout)
         modframe <- model.frame(formout, data=outdf)
-        #run ST regression model
-        res<- spatialreg::errorsarlm(modframe, data=outdf,
-                                   listw=listw)
+        res<- spatialreg::errorsarlm(modframe, 
+                                     listw=listw)
         
     }
     return(res)

@@ -7,7 +7,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 8, message = TRUE, warning = FALSE)
 library(rmarkdown)
 #load strm
@@ -53,8 +53,20 @@ $$Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t
 
 ##Example 1: Produce in the United States
 
+(This example has been adapted from the `splm` package vignette.)
 
-**TODO: Introduce example**
+
+The first data set we will use is the **Produc** data set from the `Ecdat` package. This data set is a panel of United States production data from 1970-1986. There are 816 observations by county in the United States. The variables we will use are:
+
+- `year`: year
+- `state`: state in the United States
+- `gsp`:
+- `pcap`: private capital stock.
+- `pc`: public captial.
+- `emp`: labor input measured by employment in non-agricultural payrolls.
+- `unemp`: state unemployment rate.
+
+We also load **usaww** from the `splm` package, a spatial weights matrix of the 48 contintental United States based on second-order neighbors.
 
 
 ```{r}
@@ -66,17 +78,56 @@ data("usaww")
 str(Produc)
 str(usaww)
 
+```
+
+###Single Year Lag
+
+We next convert the spatial weights matrix to a list of spatial weights using the `mat2listw()` function from the `spdep` package and check the `class()` of the object:
+
+```{r}
 #create list of spatial weights
 usalw <- mat2listw(usaww)
 class(usalw)
+```
 
-formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",wide=FALSE,year==1970 | year==1971)
+Next, we perform the spatio-temporal regression model. We first create a formula using `as.formula()`. For this model, our response is `log(gsp)` and our explanatory variables are `log(pcap), log(pc), log(emp), unemp`.
+
+For this analysis, we will limit the data to only 1970 and 1971 - two time periods.
+
+We se the `strm()` function from the `strm` package. The first argument is the model formula. Given that the data is in *long* format, `strm` will create the lagged values for you as well as the lagged response in the right-hand side of the model. The next argument is `id`, which we set to "state" as each observation is taken at the state level. We then specify the name of the data set (`data=Produc`), the list of spatial weights (`listw = usalw`), `time=2`, we tell `strm` that the data is in *long* format by setting `wide=FALSE`, and lastly we pass an argument to filter observations where `year` is equal to either 1970 or 1971 (2 time periods).
+
+
+
+```{r}
+formula1 <-as.formula(log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+out <- strm(formula1, id="state", data=Produc, listw = usalw, time=2,wide=FALSE,year==1970 | year==1971)
 summary(out)
 
 ```
 
+From the model summary output, we see that `strm` has included lagged variables (\*.Tlag1) for each of the explanatory variables initially specified (`log(pcap), log(pc), log(emp), unemp`), as well as a lagged variable for the response (`log(gsp)`).
 
+
+###With 2 Lags
+
+As the number of time periods in the data increase, so do the number of lags. If we now use the same model, but instead include an additional year (1972) and set `time=3`.
+
+```{r}
+formula2 <-as.formula(log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+out <- strm(formula2, id="state", data=Produc, listw= usalw, time=3,
+            wide=FALSE,year==1970 | year==1971 | year ==1972)
+
+```
+
+
+After executing the `strm()` model, we apply the `summary()` function to the results object, `out`.
+
+```{r}
+summary(out)
+
+```
+
+From the model summary output, we see that `strm` has now included two lagged variables (\*.Tlag1 and \*.Tlag2) for each of the explanatory variables initially specified, as well as two lags for the response variable.
 
 ##Example 2: Minor Civil Divisions in Wisconsin
 
@@ -94,8 +145,8 @@ names(sptdmg)
 First, fit a standard linear regression model with population growth from 2000 to 2010 as the response variable and population growth from 1990 to 2000, the old population in 2000, and the old population in 1990 as the explanatory variables.
 
 ```{r}
-formula <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
-m2 <- lm(formula, data = sptdmg)
+formula2 <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
+m2 <- lm(formula2, data = sptdmg)
 summary(m2)
 
 ```
@@ -131,11 +182,9 @@ Perform spatio-temporal regression model:
 ```{r}
 id <- "STFID"
 #since this data is in wide format, include temporal lag for both explanatory and response variable manually
-res <- strm(formula, id=id, data=sptdmg_sf, listw= listwk, time=2,trans=NULL,wide=TRUE)
+res <- strm(formula2, id="STFID", data=sptdmg_sf, listw = listwk, time=2,wide=TRUE)
 summary(res)
 ```
-
-
 
 
 
