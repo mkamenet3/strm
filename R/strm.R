@@ -16,7 +16,7 @@
 #' data("usaww")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,year==1970 | year==1971)
+#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, year==1970 | year==1971)
 strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
     formin <- formula
     if(missing(wide) | wide == FALSE){

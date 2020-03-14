@@ -11,7 +11,7 @@
 #' @export
 #' @examples 
 #' \donttest{
-#'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,year==1970 | year==1971)}
+#'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,wide = FALSE,year==1970 | year==1971)}
 createlagvars <- function(data, vars, id, time=time, wide, ...){
     filter_args <- rlang::enquos(...)
     keepvars <- c(vars, rlang::as_name(id))
