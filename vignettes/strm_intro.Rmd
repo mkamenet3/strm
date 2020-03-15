@@ -131,9 +131,14 @@ From the model summary output, we see that `strm` has now included two lagged va
 
 ##Example 2: Minor Civil Divisions in Wisconsin
 
-**TODO: Introduce example**
+We use the example from *Spatial Regression Models for the Social Sciences* Chi & Zhu (2019). The example uses population growth data from 2000 to 2010. Data are at the minor civil division (MCD) level in Wisconsin. There are two years of data: 2000 and 2010. The variables we will use are:
 
-There are two years of data: 2000 and 2010.
+- `LNP1000`: population growth from 2000 to 2010.
+- `LNP0090`: population growth from 1990 to 2000.
+- `POLD00`: percentage of the old population (age sixty-five and older) in 2000.
+- `POLD90`: percentage of the old population (age sixty-five and older) in 1990.
+
+We load the shapefile in using the `readOGR()` from the `rgdal` package. 
 
 ```{r}
 sptdmg <- readOGR("../inst/extdata/sptdmg3/.", "sptdmg3")
@@ -153,7 +158,7 @@ summary(m2)
 
 
 
-Create spatial weights matrix based on 4-nearest neighbors:
+We first convert the `SpatialPolygonsDataFrame` to a simple features or `sf` object. We use the `st_as_sf()` function from the `sf` package. 
 
 
 
@@ -161,15 +166,14 @@ Create spatial weights matrix based on 4-nearest neighbors:
 #convert to simple features
 sptdmg_sf <- sf::st_as_sf(sptdmg)
 class(sptdmg_sf)
+```
 
-#attempt with sf
-nb.poly <- poly2nb(sptdmg, row.names=row.names(sptdmg))
-listw <- nb2listw(nb.poly, style="W", zero.policy = TRUE)
-coords <-st_coordinates(st_centroid(sptdmg_sf)) #extract centroid of each  minor civil division
-plot(sptdmg, main="Wisconsin: Second-Order Neighbors");
-plot(nb.poly, coords, col="blue", add=TRUE)
 
+Next, we create a spatial weights matrix based on 4-nearest neighbors. We extract the coordinates from the MCD centroids using `st_centroid()` to extract the centroid of each MCD and `st_coordinates()` to extract the coordinates. We then use `knearneigh()` from the `spdep` package and specify `k=4` to create a matrix of the 4 nearest neighbors; `knn2nb()` creates a neighborhood structure object and `nb2listw()` creates a spatial weights list, where we set the style to be row-standardized weights and the zero policy to be `TRUE`. Finally, we plot the MCD and their neighbors.
+
+```{r}
 #knn4
+coords <-st_coordinates(st_centroid(sptdmg_sf)) #extract centroid of each  minor civil division
 col.knn <- knearneigh(coords, k=4)
 nbknn <- knn2nb(col.knn)
 listwk <- nb2listw(nbknn, style="W", zero.policy = TRUE)
@@ -177,10 +181,9 @@ plot(sptdmg, main="Wisconsin: 4 Nearest-Neighbors"); plot(nbknn, coords,col="for
 ```
 
 
-Perform spatio-temporal regression model:
+We are now ready to perform the spatio-temporal regression model. In this example, the data is already in **WIDE** format, meaning that every variable-year is a column in the dataset. Because of this, we directly include the lagged variables for all of the covariates as well as the lagged variable for the response, just as we had done in the simple linear model above.
 
 ```{r}
-id <- "STFID"
 #since this data is in wide format, include temporal lag for both explanatory and response variable manually
 res <- strm(formula2, id="STFID", data=sptdmg_sf, listw = listwk, time=2,wide=TRUE)
 summary(res)
