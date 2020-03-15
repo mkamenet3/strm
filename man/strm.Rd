@@ -4,10 +4,10 @@
 \alias{strm}
 \title{strm}
 \usage{
-strm(formula, id, data, listw, time = 2, trans, wide = FALSE, ...)
+strm(formula, id, data, listw, time = 2, wide = FALSE, ...)
 }
 \arguments{
-\item{formula}{Model formula specified by user (without lags). Any transformed variables, such as logged-variables, must be created outside of this function in the dataframe.}
+\item{formula}{Model formula specified by user (without lags). Any transformed variables, such as logged-variables, should be specified in the model formula.}
 
 \item{id}{Group identifier (example: state).}
 
@@ -16,8 +16,6 @@ strm(formula, id, data, listw, time = 2, trans, wide = FALSE, ...)
 \item{listw}{Weights list object.}
 
 \item{time}{Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}.}
-
-\item{trans}{Transformation to be applied. Current implementation allows for \code{"log"}, \code{"sqrt"}, \code{"log10"}, and transformations.}
 
 \item{wide}{Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.}
 
@@ -29,13 +27,12 @@ The \code{strm} function provides maximum likelihood estimation of a spatio-temp
 \details{
 Spatio-temporal regression model
 
-Any transformed variables should be included in the formula statement as \code{variablename_transf}, where the transformation is indicated by an underscore \code{_} followed by a short name for the transformation. For example, to request \code{gdp} log-transformed, you would build the model formula as \code{gdp_log}.
+Any transformed variables should be included in the formula statement. For example, to request \code{gdp} natural log-transformed, you would build the model formula as \code{log(gdp)}.
 }
 \examples{
-\donttest{
 data("Produc", package = "Ecdat")
 data("usaww")
 usalw <- mat2listw(usaww)
-formula <- as.formula( gsp_log  ~ pcap_log + pc_log + emp_log + unemp)
-out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,trans="log",year==1970 | year==1971)}
+formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
+out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, year==1970 | year==1971)
 }

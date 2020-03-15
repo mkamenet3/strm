@@ -4,7 +4,7 @@
 \alias{createlagvars}
 \title{createlagvars}
 \usage{
-createlagvars(data, vars, id, time = 2, trans, wide, ...)
+createlagvars(data, vars, id, time = time, wide, ...)
 }
 \arguments{
 \item{data}{Name of dataframe.}
@@ -14,8 +14,6 @@ createlagvars(data, vars, id, time = 2, trans, wide, ...)
 \item{id}{Group identifier (example: state).}
 
 \item{time}{Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}.}
-
-\item{trans}{Transformation to be applied. Current implementation allows for \code{"log"}, \code{"sqrt"}, \code{"log10"}, and transformations.}
 
 \item{wide}{Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. Default is \code{FALSE}.}
 
@@ -29,5 +27,5 @@ Create lagged and transformed variables
 }
 \examples{
 \donttest{
- outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2, trans="log",year==1970 | year==1971)}
+ outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,wide = FALSE,year==1970 | year==1971)}
 }

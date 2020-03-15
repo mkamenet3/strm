@@ -16,13 +16,13 @@
 #' data("usaww")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2,year==1970 | year==1971)
+#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, year==1970 | year==1971)
 strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
     formin <- formula
     if(missing(wide) | wide == FALSE){
         wide <- FALSE
     } else {
-        message("Data is in wide format. strm assumes you include the temporally-lagged explanatory variables manually.")
+        warning("Data is in wide format. strm assumes you include the temporally-lagged explanatory variables manually.")
         wide <- wide
     }
     y <- deparse(formula(formin)[[2]])
@@ -43,8 +43,8 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
         
         formout <- as.formula(paste0(y," ~ ", rhs))
         #run spatial error model with spatially lagged explanatory vars
-        message("The spatial regression model fitted: ")
-        print(formout)
+        message("The spatio-temporal regression model fitted:")
+        message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
         res<- spatialreg::errorsarlm(modframe,
                                      listw=listw)
@@ -65,6 +65,7 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
             rhs <- paste(c(xs,xs_Tlags, y_lags), collapse=" + ")
         } else {
             outdf <- data
+            outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=time,wide, ...)
             #Put formula together
             rhs <- paste(c(xs), collapse=" + ")
         }
@@ -76,8 +77,8 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,...){
         rhs <- gsub("*\\(*)*","",rhs)
     
         formout <- as.formula(paste0(y," ~ ", rhs))
-        message("The spatio-temporal regression model fitted: ")
-        print(formout)
+        message("The spatio-temporal regression model fitted:")
+        message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
         res<- spatialreg::errorsarlm(modframe, 
                                      listw=listw)

@@ -11,29 +11,33 @@
 #' @export
 #' @examples 
 #' \donttest{
-#'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,year==1970 | year==1971)}
+#'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,wide = FALSE,year==1970 | year==1971)}
 createlagvars <- function(data, vars, id, time=time, wide, ...){
-    #print(paste0("time: ",time))
     filter_args <- rlang::enquos(...)
     keepvars <- c(vars, rlang::as_name(id))
     id <- rlang::enquo(id)
     timeseq <- seq(time-1)
     outdf <- data %>%
-                dplyr::filter(!!!filter_args) %>%
-                dplyr::select(!!keepvars)
+        dplyr::filter(!!!filter_args) %>%
+        dplyr::select(!!keepvars)
+    
     if (wide == FALSE){
-        lags <- NULL
-        outdf <- suppressWarnings(outdf%>%
-            tidyr::nest(-!!id) %>%
-            dplyr::mutate(lags = purrr::map(data, function(dat){
-                purrr::imap_dfc(dat, ~purrr::set_names(purrr::map(timeseq, lag, x= .x),
-                                                       paste0(.y,".",'Tlag',timeseq)))
-                # purrr::imap_dfc(dat, ~purrr::set_names(purrr::map(time, lag, x= .x),
-                #                                        paste0(.y,".",'Tlag',lag)))
-             })) %>%
-            tidyr::unnest(cols=c(data,lags)) %>%
-            dplyr::filter(complete.cases(.)))
-        return(outdf)
+        if(time>1){
+            lags <- NULL
+            outdf <- suppressWarnings(outdf%>%
+                                          tidyr::nest(-!!id) %>%
+                                          dplyr::mutate(lags = purrr::map(data, function(dat){
+                                              purrr::imap_dfc(dat, ~purrr::set_names(purrr::map(timeseq, lag, x= .x),
+                                                                                     paste0(.y,".",'Tlag',timeseq)))
+                                              # purrr::imap_dfc(dat, ~purrr::set_names(purrr::map(time, lag, x= .x),
+                                              #                                        paste0(.y,".",'Tlag',lag)))
+                                          })) %>%
+                                          tidyr::unnest(cols=c(data,lags)) %>%
+                                          dplyr::filter(complete.cases(.)))
+            return(outdf)
+        } else {
+            return(outdf)
+        }
     } else {
         return(outdf)
     }
