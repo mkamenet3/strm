@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>An Introduction to strm</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">An Introduction to strm</h1>
+
+
+
+<p><code>strm</code> is an <code>R</code> package that fits spatio-temporal regression model based on Chi &amp; Zhu <em>Spatial Regression Models for the Social Sciences</em> (2019). Based on Elhorst 2001, 2003, and 2010a, the approach here fits a spatial error model while incorporating a temporally lagged response variable, temporally lagged explanatory variables, and spatially lagged explanatory variables.</p>
+<p>This package builds on the <code>errorsarlm()</code> function from the <code>spatialreg</code> package.</p>
+<p>This package is still under development. Please report bugs or constructive tips to issues <a href="https://github.com/mkamenet3/strm/issues">here</a>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Fit a spatial error model but include a temporally lagged response variable, temporally lagged explanatory variable, and temporally and spatially lagged explanatory variables.</p>
+<p>Spatial error model at time <span class="math inline">\(t\)</span>:</p>
+<p><span class="math display">\[Y_t = X_t \beta + u_t, u_t=\rho Wu_t + \varepsilon\]</span></p>
+<p>Adding in a temporally lagged response variable and temporally lagged explanatory variable:</p>
+<p><span class="math display">\[Y_t = X_t\beta_t + \beta_2Y_{t-1} + X_{t-1}\beta_3 + u_t, u_t=\rho Wu_t + \varepsilon\]</span></p>
+<p>This becomes:</p>
+<p><span class="math display">\[Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t-1}\beta_3 - W X_t \rho \beta_1 -WX_{t-1} \rho \beta_3 + \varepsilon\]</span></p>
+<div id="example-1-produce-in-the-united-states" class="section level2">
+<h2>Example 1: Produce in the United States</h2>
+<p>(This example has been adapted from the <code>splm</code> package vignette.)</p>
+<p>The first data set we will use is the <strong>Produc</strong> data set from the <code>Ecdat</code> package. This data set is a panel of United States production data from 1970-1986. There are 816 observations by county in the United States. The variables we will use are:</p>
+<ul>
+<li><code>year</code>: year</li>
+<li><code>state</code>: state in the United States</li>
+<li><code>gsp</code>:</li>
+<li><code>pcap</code>: private capital stock.</li>
+<li><code>pc</code>: public captial.</li>
+<li><code>emp</code>: labor input measured by employment in non-agricultural payrolls.</li>
+<li><code>unemp</code>: state unemployment rate.</li>
+</ul>
+<p>We also load <strong>usaww</strong> from the <code>splm</code> package, a spatial weights matrix of the 48 contintental United States based on second-order neighbors.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#load data example</span>
+<span class="kw">data</span>(<span class="st">&quot;Produc&quot;</span>)
+<span class="kw">data</span>(<span class="st">&quot;usaww&quot;</span>)
+
+<span class="co">#explore the data structures</span>
+<span class="kw">str</span>(Produc)</code></pre></div>
+<pre><code>## 'data.frame':    816 obs. of  10 variables:
+##  $ state: Factor w/ 48 levels &quot;ALABAMA&quot;,&quot;ARIZONA&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ year : int  1970 1971 1972 1973 1974 1975 1976 1977 1978 1979 ...
+##  $ pcap : num  15033 15502 15972 16406 16763 ...
+##  $ hwy  : num  7326 7526 7765 7908 8026 ...
+##  $ water: num  1656 1721 1765 1742 1735 ...
+##  $ util : num  6051 6255 6442 6756 7002 ...
+##  $ pc   : num  35794 37300 38670 40084 42057 ...
+##  $ gsp  : int  28418 29375 31303 33430 33749 33604 35764 37463 39964 40979 ...
+##  $ emp  : num  1010 1022 1072 1136 1170 ...
+##  $ unemp: num  4.7 5.2 4.7 3.9 5.5 7.7 6.8 7.4 6.3 7.1 ...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(usaww)</code></pre></div>
+<pre><code>##  num [1:48, 1:48] 0 0 0 0 0 0 0 0.5 0.2 0 ...
+##  - attr(*, &quot;dimnames&quot;)=List of 2
+##   ..$ : chr [1:48] &quot;ALABAMA&quot; &quot;ARIZONA&quot; &quot;ARKANSAS&quot; &quot;CALIFORNIA&quot; ...
+##   ..$ : chr [1:48] &quot;ALABAMA&quot; &quot;ARIZONA&quot; &quot;ARKANSAS&quot; &quot;CALIFORNIA&quot; ...</code></pre>
+<div id="single-year-lag" class="section level3">
+<h3>Single Year Lag</h3>
+<p>We next convert the spatial weights matrix to a list of spatial weights using the <code>mat2listw()</code> function from the <code>spdep</code> package and check the <code>class()</code> of the object:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#create list of spatial weights</span>
+usalw &lt;-<span class="st"> </span><span class="kw">mat2listw</span>(usaww)
+<span class="kw">class</span>(usalw)</code></pre></div>
+<pre><code>## [1] &quot;listw&quot; &quot;nb&quot;</code></pre>
+<p>Next, we perform the spatio-temporal regression model. We first create a formula using <code>as.formula()</code>. For this model, our response is <code>log(gsp)</code> and our explanatory variables are <code>log(pcap), log(pc), log(emp), unemp</code>.</p>
+<p>For this analysis, we will limit the data to only 1970 and 1971 - two time periods.</p>
+<p>We se the <code>strm()</code> function from the <code>strm</code> package. The first argument is the model formula. Given that the data is in <em>long</em> format, <code>strm</code> will create the lagged values for you as well as the lagged response in the right-hand side of the model. The next argument is <code>id</code>, which we set to “state” as each observation is taken at the state level. We then specify the name of the data set (<code>data=Produc</code>), the list of spatial weights (<code>listw = usalw</code>), <code>time=2</code>, we tell <code>strm</code> that the data is in <em>long</em> format by setting <code>wide=FALSE</code>, and lastly we pass an argument to filter observations where <code>year</code> is equal to either 1970 or 1971 (2 time periods).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">formula1 &lt;-<span class="kw">as.formula</span>(<span class="kw">log</span>(gsp)  <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(pcap) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(pc) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(emp) <span class="op">+</span><span class="st"> </span>unemp)
+out &lt;-<span class="st"> </span><span class="kw">strm</span>(formula1, <span class="dt">id=</span><span class="st">&quot;state&quot;</span>, <span class="dt">data=</span>Produc, <span class="dt">listw =</span> usalw, <span class="dt">time=</span><span class="dv">2</span>,<span class="dt">wide=</span><span class="ot">FALSE</span>,year<span class="op">==</span><span class="dv">1970</span> <span class="op">|</span><span class="st"> </span>year<span class="op">==</span><span class="dv">1971</span>)</code></pre></div>
+<pre><code>## The spatio-temporal regression model fitted:</code></pre>
+<pre><code>## loggsp ~ logpcap + logpc + logemp + unemp + logpcap.Tlag1 + logpc.Tlag1 +     logemp.Tlag1 + unemp.Tlag1 + loggsp.Tlag1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(out)</code></pre></div>
+<pre><code>## 
+## Call:spatialreg::errorsarlm(formula = modframe, listw = listw)
+## 
+## Residuals:
+##         Min          1Q      Median          3Q         Max 
+## -0.03855189 -0.00739710 -0.00061512  0.00585547  0.05119821 
+## 
+## Type: error 
+## Coefficients: (asymptotic standard errors) 
+##                  Estimate  Std. Error z value  Pr(&gt;|z|)
+## (Intercept)    1.9946e-01  7.6150e-02  2.6193 0.0088117
+## logpcap       -1.8587e-01  2.3251e-01 -0.7994 0.4240508
+## logpc          1.4288e-05  2.5371e-01  0.0001 0.9999551
+## logemp         8.2984e-01  1.9872e-01  4.1758 2.969e-05
+## unemp          3.3262e-03  6.0468e-03  0.5501 0.5822638
+## logpcap.Tlag1  1.9192e-01  2.2597e-01  0.8493 0.3956987
+## logpc.Tlag1    1.7700e-02  2.5045e-01  0.0707 0.9436582
+## logemp.Tlag1  -7.5794e-01  1.9659e-01 -3.8555 0.0001155
+## unemp.Tlag1   -4.5510e-03  6.8513e-03 -0.6643 0.5065302
+## loggsp.Tlag1   9.1257e-01  2.5405e-02 35.9204 &lt; 2.2e-16
+## 
+## Lambda: -0.0093887, LR test value: 0.00085418, p-value: 0.97668
+## Asymptotic standard error: 0.20491
+##     z-value: -0.045819, p-value: 0.96345
+## Wald statistic: 0.0020994, p-value: 0.96345
+## 
+## Log likelihood: 128.249 for error model
+## ML residual variance (sigma squared): 0.00027975, (sigma: 0.016726)
+## Number of observations: 48 
+## Number of parameters estimated: 12 
+## AIC: -232.5, (AIC for lm: -234.5)</code></pre>
+<p>From the model summary output, we see that <code>strm</code> has included lagged variables (*.Tlag1) for each of the explanatory variables initially specified (<code>log(pcap), log(pc), log(emp), unemp</code>), as well as a lagged variable for the response (<code>log(gsp)</code>).</p>
+</div>
+<div id="with-2-lags" class="section level3">
+<h3>With 2 Lags</h3>
+<p>As the number of time periods in the data increase, so do the number of lags. If we now use the same model, but instead include an additional year (1972) and set <code>time=3</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">formula2 &lt;-<span class="kw">as.formula</span>(<span class="kw">log</span>(gsp)  <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(pcap) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(pc) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(emp) <span class="op">+</span><span class="st"> </span>unemp)
+out &lt;-<span class="st"> </span><span class="kw">strm</span>(formula2, <span class="dt">id=</span><span class="st">&quot;state&quot;</span>, <span class="dt">data=</span>Produc, <span class="dt">listw=</span> usalw, <span class="dt">time=</span><span class="dv">3</span>,
+            <span class="dt">wide=</span><span class="ot">FALSE</span>,year<span class="op">==</span><span class="dv">1970</span> <span class="op">|</span><span class="st"> </span>year<span class="op">==</span><span class="dv">1971</span> <span class="op">|</span><span class="st"> </span>year <span class="op">==</span><span class="dv">1972</span>)</code></pre></div>
+<pre><code>## The spatio-temporal regression model fitted:</code></pre>
+<pre><code>## loggsp ~ logpcap + logpc + logemp + unemp + logpcap.Tlag1 + logpc.Tlag1 +     logemp.Tlag1 + unemp.Tlag1 + logpcap.Tlag2 + logpc.Tlag2 +     logemp.Tlag2 + unemp.Tlag2 + loggsp.Tlag1 + loggsp.Tlag2</code></pre>
+<p>After executing the <code>strm()</code> model, we apply the <code>summary()</code> function to the results object, <code>out</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(out)</code></pre></div>
+<pre><code>## 
+## Call:spatialreg::errorsarlm(formula = modframe, listw = listw)
+## 
+## Residuals:
+##         Min          1Q      Median          3Q         Max 
+## -0.02179096 -0.00525540  0.00041786  0.00461342  0.01653898 
+## 
+## Type: error 
+## Coefficients: (asymptotic standard errors) 
+##                 Estimate Std. Error z value  Pr(&gt;|z|)
+## (Intercept)    0.2516030  0.0462216  5.4434 5.227e-08
+## logpcap        0.0980899  0.1760534  0.5572   0.57742
+## logpc          0.2284076  0.3163419  0.7220   0.47028
+## logemp         0.2484005  0.1105107  2.2478   0.02459
+## unemp         -0.0056502  0.0035709 -1.5823   0.11359
+## logpcap.Tlag1 -0.2784667  0.3731087 -0.7463   0.45546
+## logpc.Tlag1   -0.4567652  0.3651608 -1.2509   0.21099
+## logemp.Tlag1   0.5172162  0.2297628  2.2511   0.02438
+## unemp.Tlag1    0.0099326  0.0042575  2.3330   0.01965
+## logpcap.Tlag2  0.1929118  0.2093529  0.9215   0.35681
+## logpc.Tlag2    0.2527881  0.1388406  1.8207   0.06865
+## logemp.Tlag2  -0.6862555  0.1397530 -4.9105 9.085e-07
+## unemp.Tlag2   -0.0037672  0.0033893 -1.1115   0.26636
+## loggsp.Tlag1   0.7593464  0.0720738 10.5357 &lt; 2.2e-16
+## loggsp.Tlag2   0.1317338  0.0685188  1.9226   0.05453
+## 
+## Lambda: -0.77659, LR test value: 4.9975, p-value: 0.025385
+## Asymptotic standard error: 0.18694
+##     z-value: -4.1542, p-value: 3.2636e-05
+## Wald statistic: 17.258, p-value: 3.2636e-05
+## 
+## Log likelihood: 162.5098 for error model
+## ML residual variance (sigma squared): 5.8561e-05, (sigma: 0.0076525)
+## Number of observations: 48 
+## Number of parameters estimated: 17 
+## AIC: -291.02, (AIC for lm: -288.02)</code></pre>
+<p>From the model summary output, we see that <code>strm</code> has now included two lagged variables (*.Tlag1 and *.Tlag2) for each of the explanatory variables initially specified, as well as two lags for the response variable.</p>
+</div>
+</div>
+<div id="example-2-minor-civil-divisions-in-wisconsin" class="section level2">
+<h2>Example 2: Minor Civil Divisions in Wisconsin</h2>
+<p>We use the example from <em>Spatial Regression Models for the Social Sciences</em> Chi &amp; Zhu (2019). The example uses population growth data from 2000 to 2010. Data are at the minor civil division (MCD) level in Wisconsin. There are two years of data: 2000 and 2010. The variables we will use are:</p>
+<ul>
+<li><code>LNP1000</code>: population growth from 2000 to 2010.</li>
+<li><code>LNP0090</code>: population growth from 1990 to 2000.</li>
+<li><code>POLD00</code>: percentage of the old population (age sixty-five and older) in 2000.</li>
+<li><code>POLD90</code>: percentage of the old population (age sixty-five and older) in 1990.</li>
+</ul>
+<p>We load the shapefile in using the <code>readOGR()</code> from the <code>rgdal</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sptdmg &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="st">&quot;../inst/extdata/sptdmg3/.&quot;</span>, <span class="st">&quot;sptdmg3&quot;</span>)</code></pre></div>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;C:\Users\Maria\AppData\Local\Temp\Rtmpg3DNw0\Rbuild29f4bb31684\strm\inst\extdata\sptdmg3&quot;, layer: &quot;sptdmg3&quot;
+## with 1837 features
+## It has 43 fields
+## Integer64 fields read as strings:  COUNT METROCIT</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(sptdmg)</code></pre></div>
+<pre><code>## [1] &quot;SpatialPolygonsDataFrame&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;sp&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(sptdmg)</code></pre></div>
+<pre><code>##  [1] &quot;STFID&quot;      &quot;COUNT&quot;      &quot;FIRST_COUN&quot; &quot;FIRST_MCD2&quot; &quot;FIRST_TYPE&quot;
+##  [6] &quot;FIRST_NA_1&quot; &quot;X_COORD&quot;    &quot;Y_COORD&quot;    &quot;POLD00&quot;     &quot;POLD90&quot;    
+## [11] &quot;POLD80&quot;     &quot;POLD70&quot;     &quot;ACSAIR&quot;     &quot;LNP1000&quot;    &quot;LNP0090&quot;   
+## [16] &quot;LNP9080&quot;    &quot;LNP8070&quot;    &quot;PUNMP00&quot;    &quot;PUNMP90&quot;    &quot;PUNMP80&quot;   
+## [21] &quot;PUNMP70&quot;    &quot;PFRST&quot;      &quot;DEVPB&quot;      &quot;METROCIT&quot;   &quot;WLNP1000&quot;  
+## [26] &quot;WLNP0090&quot;   &quot;WPOLD00&quot;    &quot;WACSAIR&quot;    &quot;WPFRST&quot;     &quot;WDEVPB&quot;    
+## [31] &quot;WLNP9080&quot;   &quot;WLNP8070&quot;   &quot;WPOLD90&quot;    &quot;WPOLD80&quot;    &quot;WPOLD70&quot;   
+## [36] &quot;WPUNMP90&quot;   &quot;WPUNMP80&quot;   &quot;WPUNMP70&quot;   &quot;WPUNMP00&quot;   &quot;URBAN&quot;     
+## [41] &quot;SUBURB&quot;     &quot;ITCTDEVU&quot;   &quot;ITCTDEVS&quot;</code></pre>
+<p>First, fit a standard linear regression model with population growth from 2000 to 2010 as the response variable and population growth from 1990 to 2000, the old population in 2000, and the old population in 1990 as the explanatory variables.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">formula2 &lt;-<span class="st"> </span><span class="kw">as.formula</span>(LNP1000 <span class="op">~</span><span class="st"> </span>LNP0090 <span class="op">+</span><span class="st"> </span>POLD00 <span class="op">+</span><span class="st"> </span>POLD90)
+m2 &lt;-<span class="st"> </span><span class="kw">lm</span>(formula2, <span class="dt">data =</span> sptdmg)
+<span class="kw">summary</span>(m2)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = formula2, data = sptdmg)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.69307 -0.06942 -0.01170  0.05636  1.08243 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.109237   0.009174  11.907  &lt; 2e-16 ***
+## LNP0090      0.061267   0.020858   2.937 0.003352 ** 
+## POLD00      -0.335543   0.089100  -3.766 0.000171 ***
+## POLD90      -0.214722   0.082246  -2.611 0.009109 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1348 on 1833 degrees of freedom
+## Multiple R-squared:  0.05626,    Adjusted R-squared:  0.05471 
+## F-statistic: 36.42 on 3 and 1833 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>We first convert the <code>SpatialPolygonsDataFrame</code> to a simple features or <code>sf</code> object. We use the <code>st_as_sf()</code> function from the <code>sf</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#convert to simple features</span>
+sptdmg_sf &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(sptdmg)
+<span class="kw">class</span>(sptdmg_sf)</code></pre></div>
+<pre><code>## [1] &quot;sf&quot;         &quot;data.frame&quot;</code></pre>
+<p>Next, we create a spatial weights matrix based on 4-nearest neighbors. We extract the coordinates from the MCD centroids using <code>st_centroid()</code> to extract the centroid of each MCD and <code>st_coordinates()</code> to extract the coordinates. We then use <code>knearneigh()</code> from the <code>spdep</code> package and specify <code>k=4</code> to create a matrix of the 4 nearest neighbors; <code>knn2nb()</code> creates a neighborhood structure object and <code>nb2listw()</code> creates a spatial weights list, where we set the style to be row-standardized weights and the zero policy to be <code>TRUE</code>. Finally, we plot the MCD and their neighbors.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#knn4</span>
+coords &lt;-<span class="kw">st_coordinates</span>(<span class="kw">st_centroid</span>(sptdmg_sf)) <span class="co">#extract centroid of each  minor civil division</span>
+col.knn &lt;-<span class="st"> </span><span class="kw">knearneigh</span>(coords, <span class="dt">k=</span><span class="dv">4</span>)
+nbknn &lt;-<span class="st"> </span><span class="kw">knn2nb</span>(col.knn)
+listwk &lt;-<span class="st"> </span><span class="kw">nb2listw</span>(nbknn, <span class="dt">style=</span><span class="st">&quot;W&quot;</span>, <span class="dt">zero.policy =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(sptdmg, <span class="dt">main=</span><span class="st">&quot;Wisconsin: 4 Nearest-Neighbors&quot;</span>); <span class="kw">plot</span>(nbknn, coords,<span class="dt">col=</span><span class="st">&quot;forestgreen&quot;</span>, <span class="dt">add=</span><span class="ot">TRUE</span>)</code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwAAAAHgCAMAAAAlhPoXAAAAvVBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZmYAZpAAZrYiiyI6AAA6OgA6Ojo6OmY6OpA6ZpA6ZrY6kJA6kLY6kNtmAABmOgBmOjpmZgBmkLZmkNtmtttmtv+QOgCQZgCQZjqQkGaQkLaQtpCQttuQtv+Q27aQ29uQ2/+2ZgC2Zjq2ZpC2kGa225C227a229u22/+2/7a2/9u2///bkDrbkGbbtmbbtpDb27bb29vb////tmb/25D/27b//7b//9v///8gtNDiAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAgAElEQVR4nO19C5srx3FdkSETthTFskU5iajYsRP7Og8zESM7ZCjW//9ZBqbrnKqeGWBnl8AC2T7nI/fiMQ9MTZ3uevaYC8LEsEf/AEF4JEQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgacxPgT1/bl9+7/79f2Gd/7/7T7+3z//375ZM34qcX9z5t8RVefzL7pv+Ir67scfVo/+0PLxxs+4u+W64VO33+B58bcxPgrPInDfjBzH7TledlFX7heC/s/Z0NBDhv/XYC/PjbzysB9g4mAryAuQkQ2nBSnrPanCaC39z5fKdTDAQ4j9pvJ0DV38MHEwEGTE6AH85D/2mUtLMmnN58EyPm//ml2Wd/9u2yzR9Pr//V75aX//SXp5f/4TyintTo7/7B7ItFl7h137t+N47Ay5kGApxOGzr702mXz369bPtPvz1986u/76f5m9/a59/Wb3m28/7U4AsHi/P/tPyeRd/rrzt98D9PlxQXOlxdP22Vw8fE5AQ4jchfnZTms78+D4vnsREqbFSuT/31eW6Ij88aFS+X0TS3HvaGX1EI8J198duRAKfjdp09/T3ji7DIhkN/+X35Ns+2IcDOwfr5F+LZZ7/sBMiL+1Reb6/uy++rHD4oJifAoh8/2Of/42z9fDq9Xj44a9H3/sdF60/a+Bff//j1WQlObOnq/ZtFRb74tr8uW5MA+G4kwA+nwXdwgj//96fjdp39dB5wFyPstMu/+T7ssdNBvvzW/2/5tv620QS6dLDT+U8X8dX3P32yIMCX+HWfltd/hAFYr+582nquj4rJCbDo0HeL77v83xXmpAtf/GPZ4KQRf/aP1LcwJM4W9zKBlK1JAHw34KRP34xRoIV4i86e/vQ5pqv0P//3Xy5a+R1jO/h2+9uuHqz/or7hn77OX943+dT9gU99PllfXb2yD4vZCXAaG3/3+5MunJTlf32NEbNbDIs5XEZwvPwO5lK4nJuty3cDPvWNKwH+cFLB//p1ZxENn5/+qr/8ih5r+bacrSvrYu58+f2Fg+F6vuT29dd9gvED22+4unplHxazE+CkK3/+9elun6yTv/nFWfkWPfjxt11//ktVWGj02Vce1GjY+jIBfggvYSDA6fz/+rxh2P1Q8S/+8z9/XQhQvi1n2xBg/2DdpMMJVwSg0u9cXb2yD4vZCbCoT1ejf5tu7OnW//UvF706MANstr5AAHicNKlhbVgftL+J7br1/6evxxngmzwQzrYhwM7BftYMUM/1UTE7AZADWGb7Hi+hwv+nNI1/+NXfrn2AlZIvW7+BAIv+flW3/gEuxG9IgM2x6m+7erA9H6ASYGHKjg+QuYI410fF9AT4zjLE+RuGhewvFjuoB1B+vTgF36ziJFSjsvWWAOtM7NoE6idedPGz3/mPX3cX/Mvvf/x99QHKt/W3bXNam4PtRYEGAny+HwWC5cVzfVRMT4CzvfxN/tsV5h9ocXPgPqvtEClPNcqt30KA86idoft+kLUTXL6tv+0Hq3mASwfb5AEGAizY5gH6aascPiimJ0C3C5Z/S+LqnP21X5VM8H9cXi650uXlYOZw67cQYBmeT//8+Fe/iJzsOQr0xd9+N9gi+W35bUt+99urByuZ4H/37Z4PsM4El6vzUQ4fE9MTYCZ8+si2zBshAsyAk6nz673UnCACTAEkBj6yMf9GiABT4Me//MVHL+t8I0QAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0R4B0hYT8fdE/eEWb1r0T/DNBdeEecdP78X38t0T8FdBfeDxbjfp8BJPqngO7Cu8GWCcDCBhIBngO6C++AMHoWLP94/BUeDt2Fu6NrfXlpJh/4aaDbcHcsxo5l8Mck9SeCbsXdUWx/2kAS+7NAd+K+gMJD96tBJDwBdCvujVD4YEBrTRPAM0G34r4oJv+i/NR/Cf45oPtwLyxazoBPKH8L3dck8CzQfbgPFnsn/p7+ad30aaYg6JNBN+I+KG7vafiPd00ZsKeDbsYdUKKdp//C7039l8yfCLoZNwcH//66ees0UArgGaHbcXPUME8786D5ov9S/2eEbshtkYb/4vk6rP7zSxVBPCF0Q24IDPHW4/2noX+x/s+vWy8H0gzwbNANeS32tNgKznbPyd7pBOg+QKNfIDwbdE9eCVS2jZ9F2J+GT9R/RhQosmIP+b3CdeiuvAqwcYxvOSP0f5ZsL6Ke/Z8lCpr7CE8F3ZVXAZYM13eA1bMofmuodeszwNkO6gngJgY8KXRTDgNprCWiSbO/KzqSXWezv8EY6h97TAZiwFNC9+QwBsPGENz0zgnnUD+4w5gYRstJeB7olhwGTHr6AUOAB8Z+uMCe3Y+RBVMZ0FNCd+QwwvBZRvmWFW497rlIcgn4t1wFooWX0BNiaI0Rngm6IYexDOdtGdW7zc9JwWEQgQCDteThF8sKekbofhxGcX09CtxCzzHYN88ZwPJlT4uVyKnwPNDdOAzrVk4YQt20b1310eo4+MAt5wZrRe/FgGeCbsZhdALkTOA9uEMrv1o9DH4GEfh59scLTwHdiMPoPgBWueIw3+vdlkhPmkCgB8pAQQEcRpbQs0C34TBo/4e5j0G++8PwjOkEI14an/Y6oeU4XCpLLHg8dAcOo3e4xKuu9a27Ahjd48OcAWA0IUvQGk0oWULPAd2Bw4gWrxzXe+kPW36p6rD2YyJAX2S3j9AathxRFHg4JP/DKDNAKnJ/7aj02YSCKloLUyn9ZmWHHw1J/zBCwRdLx5e2L2O1J7pfeuWDh+Pr5fPuAFjk0fCfZoFHQ7I/DESBGqJAXfdDtzHMe6mB61s4PuKBbGkaC9849hEeA4n+MKjbjmaA0PQY87kRPd3eD9D9hDLUD9OCNTHgkZDkD6MkwhAQjfUOGyvgeqAfi0F4ny6QQaatY+CLcRp42FXNDkn+MGomuJg8MRdAo0cXuG1e7PvGug2PgiR/GDUT7EkCvu7bnF3dlpvDMTCESXOr6KGXF/xQSPSHwSgQCMDuF6h3qHZlRZRGhCdMAhjWjWCXsfAYSPSHMWSCw9iPVq/+jSHmg2mi+wlBkCVhQJupISGsR8Y8FpL8YRRb3suCKCBAqXQbokAtyuTK2tCghbNiSLfhUZDkD2OYAboB06pv21dCZIVEFgfFJ460AcJGy1d9zRRNAo+CxH4YawJkGAhfI0nQ7aBcJghFQ+SGO7vJljohVYY+DJL6YYxOMIz8SoDoGM7aoOb5qnu90VHm8SkWD2pRJ6Hb8d6QxI+i5rjwQWspwKQGWJL5LlADFXCIG/WSCe9zxJpRwntA4j6Kwb+NT0qBT2j1YiJllD9aYLr1X53g4I9hHlgciMwyv++lzQyJ+igqAXaxbDQ+CBifnv8sGbLUf6QMWDLh0UOzsa2Ee0JiPgpLo8f4URt9gND6jA3VMNGmGsKH0Gps5J0VmWYW7gqJ+CjoA7Q0gbx5YYOj/oF5AHjB3Jzxo6E6rnWjqZ8g1tzyTKUJd4TkexTp37YXCIB+SVaJxlf1SRnG7b2oeevLSyBwWsyt97rK6SDJHkUY8ix2i+F6bwZAoYOPBOjEQFQ0CWDdAY5Hy7TccyGQjKG7QoI9imrJ71Q5Fx/AofVWH440JMi8ECBCQLlkSl92jmutcJbQvboDJNSjyBTXop6OkbmFRTNyom1c3vx+fIbAkE/YuM6OiQAnfNj1f1BIoEdhGKqR4+od8T2c6awK3fq8+bnhgdmtBkirKxEmkGOD5SCtdFyKAzeGpHkUKwIsD4Hv2lyiPs4o6WLGN3Ih7RykgYsPMPrVtZ6iH7sNVNI9uyUkzKOIYb8QIBbF2oQ90+f1gQB1LS08NKB/X0yiKBzt9CkVc8Uk0ixwQ0iSx7D1eo3BfE4LnAt8jwB0IBjkdCoyVNr6mkINxUFcdCWTyFY2F342JMhjoKfbam/LwIle1HnJ9zXqcOsPDugFoHGgqIRo8AFgbSHtYF6sp/gpjxXIR4HEeAioaI5BP0xzw5JA3VCnkRK78I3F+3iIHuNHDJfCuaj0iZkgF9v1GkQVBW4ECfFl0Di3YsS3qG2GG1DyA30nJn7zb8OqigtpsJB6NZe6G4Fm+TyKwYcoXkLf6jEi+TiQAF9EVdGYAdyL7kc5v/WGRwY425YASAX3/FZjKd1IDS8eA8+LZxJ7TDfDfIGX7y6aDwAJ7TqqTZLWfKgbSxc8lLIrbfi4w3JxHmoOKyaG+P4VVo1mqsvKq7GXjBkCmFL8iXKN3wSJ7Cqsatc6uet7Li/6AWDbeMo4KyMiChRRIi4lFOtHIOSKkb3h5KTF8gXmjKCS6ubeBInrCtKe74ZO7+HlezMOyTlJDNH7FTfGP9uZJZNqxgdxj//UQgoGkmpdnYENwjFIUheBYb44vVjnhzZ/TAPesMpDuKvxSJgxc4tFs+K4PcZj1VBiugwrSnAnPIWyrq9Ix5h5BU4amgmOQmK6AA6y6FxJXccMkJ5wIYjBglkRwGjcZxUFW+GxFRQemj8EnSyfwde3Tw8ZxdODzy0KHIGEtI/Q10s1nc6n43mDXQSlhW4OBMiEFjMJm4YZrz5vpwmCol4CrmnymEd5ET6sJpTLEDoCyWgXBqf0CtzS8ezvUQoXAfyi2rRlaE5FOVw+HqOO2zW241iOnXwrtOqs40FyP0sfXLgGyWgXNLBp5wwmkKUJdIUdRbVprtOh7iZ9MdfjZWmoXx2yeNe5fbgijQdpuQCvpoADkIj2YLUrcbTxM4KZxhAfDw81zKBpf8tUV7w0aqlFRRDvRGmCrMV06ZP7WEm9sCBTDp17OKgY8CIkoR0Yy96ghq0GfJzPBi6sKDOCd9tm7HuMciHvdktdBWIggGWcv7TJsJDIcnkhjPgO1zgOUlxl6f/LkIj2YNuexsHu6e5xYUUs6AArnFpO1eYacGHL4EQrAnA1Rdhd8RoudK6sZYPC5yKMkazgoismFlyFpLMDavjWMN9H36f7DKH91oujl8M5F5KIcofyyNTaNkZfub9vDk/bUYvKB8/XEd+zrChYxrkIRxUuQcLZwhBs6SN+sYY4A+yRIhwDmkcI9Ayesjcbgkut7g8C5BeN3IroZi6XgtbK2KEZp63GOSvMIN3ky5BstggtbpF5glKX7Beej1otdcslfUL90TBsteeXvV79k95X0L9isCg9hWWwz7wyvm9cRpQmWMkoc5qIX66bfAWSzQbdAEpdt1CmIRRk8BNYw4mcQAzI2fNL58ARXkVktA/7Q1SnQekZL8UnEdbsCWIHNTBNoNQ05wvWpMbsIuxColljbZmE4TLOAL1cx2D5Y7fMjJX+sLE1JgZxvISNVKNAQ8EROsIs9m5whYdMdPEeOE1g5ZbSpSNsIMGsgDH8co6rWO/IRkW7omfcJY361QwQeYAaJ7KsmmDby6Ln1anF3mZlxkDAp7KM0wQTbo6YkbCFBLOCWa6Bvl/zXGcFkCELgjZbtRLbRB4AgzgdZuzJamcWm9peShg/1A21epcKrNGYY6LAPiSWEQYLYqiBXpeAeokyllBRw4htmAC4um0eHtoNG2pYK7QxDISVg+DUYnaB+5tRoL4kUTCVYSccLH0O3eo9SCojSiFnSe8OnfAsfEbB8rJx6GwrhdL5BKWWh8fxe3iG/muLbBqrSBuaHxnqXPbPAgm8R8Iia1HhUbScpLiDsIKkMqKYLqXefzMD1DKhjAIxG5bf9KO28fBRD4r4jEUs1IyJr9pP0Pewer7lUOvjNTyBz7FohFX3XDPALiSVEbBu9nO/jPWksRM5slzqcM2aBaz9MQ7ovdw/XNkICLH61BoeMtBH/cg4tPUMkDOWxeKjfJvxocamY2EDiWVExintarkzjPn96mUu/YkxnqElh0L3OqK+cT8zTa62PkSZLPpH6dQirBQ/N8y1oBTXoPDMvAkjJJURhQDrmmfaQYh4xqQAQ9zywx2m4Eg4aAQ22/AVC0vrgrgRx9872u6pWhy3Oy7OciIxYA8SyghWnm2d3pqdCmsbCgZjCPyBItL7ZIoAid1GdW0cy0vXTeYBoiAjpiP4w42zCqyb5JBjvOf60iUuJawgoYwwDOucAcZOAGepj8XqDaUpoJrkNi6HXgKqfBJe2XiYZ1ZRJy4pagjRMn9gTA7Hni2jQIaf3zQDXIGEssYLVoaXMrheoDyEhgafNKOW2TaWtUX9XNDlMI3SPsJeUPz6b2cehvWceRqVfCCCMmGXIansAUPmBSv70hdGX9doesNyQbwoSOShnf14DsowbeWcERDSYbqLzOPsg7xdGeUjETZMScIOJJY9mKGpqgzPDC9e0f+DfFl91Ljw1frbXa7BOe4EqDOA72yWeLRUnxKSyh4MMRn0pZR2+NoMybBkIQh5kuZ9j99nIWkpcigLZNWGG4dR338O4061X4A1pRlXQikEr4ETmetW70NS2QUJYG1U8IixGwOWKAPKsE8SoFWXwVDdNhAgRvFaRZGV1HAPcNRq58QhjOZ9nGH59Y7sQJpAutX7kFT2YVA9W4/NbfjQNisGIcLZjxHTSAnrD4XUEbaB6iet+N4ZUiqFo4WJNVvhMINKwkKJsOuQVPaxb0VfAhS4uwi1jDkH8WRDsqNTKQwpZ+9XLHUFa6j1wrplFA87B3leh+tszid2w2vuswupIALsQlLZBxQ2zPQc8Q9hvSU8CbKiIYy63gbN7Qz0t3bhtLW1vtg5kQ7ojQBWifyai7+fYJ8NE13qa1AaUXwojI4oEFtl6A8bO2Rg2be2nUHi6TBOVlUTyngMp3o3PJq4E6YM83g4Kz3rbu3UpnvDrsfHfzBqGkx0qa/BGOtkTtZDNTP9a8VYiSI3uL5JCFQ5IDJjjqCSeXq+rEKKTaOr3cvzh3M1aRSTtqwBzYRw5sEGP/rQhRtSFJNgmgt9HWiR1E4A1D1wGqA1gwJ/JGidvgD0Gektz0EW/TQsM8LgzeBpyZyVXBfp6XGAdA56ZClP5ZxjDhIABJ0HM13rK0ADaGPC5BfRFtaSIFU7MwoUMVXOKbF9LZ0bqigQx/dc/KetvocthLCUh420mESh7CBA9Nrgul66bu4/CWa61uNI2wUvKgNexNprdXyWeara78h4T9r49TcURsGGYnlp2mqk5voX5uMzmDK4duFow5kFM13rYXQDpwzNVmqDanXoRQocDqC+euO+xxAacto4waByU9eHf2EOMJtsAhABdoAojRUTHdmsqMTMWszdktCMCkXUPyL8ELdlv3w/JIsYsIoEU1z10ZRW2h5bMXSMad9spMS1ZOEQLaUraLPpvwiwA0vzIxQu4z+ZfCItvEaF1vX/ZsmgujzWsFZcfZRA6L5bZoZ51BLiLJ1ezhxahouWT8E8WE8tzn3lsrki+zSY7HIPwXK4vwD0oBhikSwYKpX8qIQmS/YI0HMJRgKQC70vnvMKRnhkgmHzpL9ck77xYT6LEvS5ZgHZjPo/3fUeQQRZDIPsQXQVQjwmE2fLNEATaTkBovYRpXGrqozYplUCRIAS2a+FgbSpDI+ex+9wetotlxpiNuLiVbfWLn37YSEC7ADqnMu0dXPCEL2/SIu9eQNVpRf2yMSBZ+yTieArh6ZiB+NK4tk5K2Bfj8nqiv5HgfVkmO+KX0bR/BL7Qdg/ShmgpUwGGMf1VZTIV8M4oqvnV4uBHxFRxvIbGwjoH+P4dYppyCVnmLQ8n34ws5JBly/aW3l00zyY74oPwIqKO0bQlgHQiAKhbo0ln1l3XAJCBnc2Jw/Gd1CtFgm0MIRiZgirxHmoVo668LDTp9Rfl/XkysOXYppoVyYAs3zoxlyY74pfRjE7uhUfIdH0dEuFTawjGipEAiB+gy4aVPp7je+EsjKk6jlpsPMFUaUSW4I725mD06AyaIwCxSsaS+tLLVd83UX+qJjvil9GDKBDknWN8TNnYxd8hyj1p8nkqWBlBd0gQO5WEm7VCynrBGEyaBGj5bzA2lDc1Nbb4r14FmsFp1NuEap6Nxk/DSa85BeRVj/K21qOkChcfiF9m6P6mC/G2O07Gw/106s0cy1CWn3svtp1uwcIs65yqD5O/7XTYcZrfgk2qDgLoQfPFk/fQk3nsg0renJvh89LM2OlqgyeNjxXtXwXxT/9hA1H4RTRwvYydArUGaA38DtNo/DX9640vfj5MOVFv4AeUKEScjKoiVlDbXRPDyN472RKzaX1eE4E5VneHzZ5+sPUwUW5hyVPWOTQXRK4IoZ1JSwV3WlGecSUDD7CjpeLQ7brMaKPixmv+SVkHD6edWq1wIexzAx4MmpPo94Gq4TP1EPAEuX90EosGhdGOycQcgpRfZwsKZizRo0CwZ9gksHqLxoutng6M2rDhJf8Ikoiah9IEWSEHyZ2DNarGcAxRudOPEkpdaDXarVbADMAl8p17uURofL8j+2QeEQkXdyI4kaOIC8WIawp1V8E2EMZuM1oTryAQpmaxfXRB8hXKzphDIdTAOJk0Rs2YnkbyHTp99QvBp+m3vX+SdvxDybBlBd9HUX/HcVp7PiKrxy6XboC6KRWxWvlgC9hiPRc1OvNR+ufjgJtH6YgxEFXqh4slxMsAEbfsw+PWdkcAdHGkEzxDIoS9QQCDJzMA6DYnhmAYBUdiXQxMnwZMX6eqH9aU1at/vTIEsSk4flrvLY05M5xrmldYBFgCwzcg9fLlDAsm7YXGzI+oaurLZLDbc2i7gT34Xr9TeQKGol4IQ/MH9zKT/f8HhZS/FL6znTfcbF9nptU/0WADeyawY+kmLOI2TiE909ZpFDK2OoMUHLAZQYwxEqTbqGwLGdmtxYOV38wXiEA1W239BwQml0P9SD0rOO/CLDBkInaI8D1JHDDXIHCuEIQFO1sOwUY3syvY8j23JwsGfUVy6AsrxM8g9MlMMaKPLeP2NC0ejDthV9CGDpU29DdEm9xGEO7BHF4nIUxR7CudViv9m82esD5ez0ZsD7ggBo9ws4ZWHpvOT8Lpr3wSzDY5WnZQ01yciiGRl0dmtXTaVZk1N7WLkXGN1czAIOfcWo6tfglVWMrAXq4p3Zo8jyIq5qNM0C0PIsAAlD0ctHw6vnCkFm1q+Mlc12pblC/tPlthwANtCved2dSbSxYnGrz0QlG9nd5zZxzetbuRo5kBg87d2/eJ02CnTHthV/E2nLAiAuFLVa6w9pBQQ+tk9C/nryNSuNG28oaZxkrulpe5VRTQj+YfAYCNKsW0HqVlob1F+mQjNc6vQUkAmxBg+EK+uq2HOJpXpcNQrtjhOUjq+PzEpKHtdKb0IxeCKmAacFwlhIFasNShjvGVo3N7lzp1DmAM+a98ssIy8FrlcGL4Z+i+7nLlR0OHGtnk72PhkzYlV12LhTVQyKAkCi+q7EX3nPsdqgVbXqqkaHgOLUzCXED0CG3MLR8jGCOM4DFb4T3vL3SMYY0JWa+9gtIawR/G7R5tV4W5grUajJ7xc9DC/MTKHEP/MRBsp4og0gwr9LiMSYCwuxpnXk1JVZT2EmV/VxXfMdV6ebExJd+CdREpxIhCdXtoojZ5KMw4hFehpIzHwwPY4EC88hwEOAksFCn5WfxK/qH3dvuISBGpjItzV9ezoQt62MLykXSUNv1DubBxJd+CRju960QVgFFtVkDA8omGIrhfe6UFiGuWZxaTA20rTrDYIqFyxqVdnhV1j7pv45FFj2/i+RvWycAxouaFzNf+z4y/l+C/yPGj2AgbfPDXv4exJC9Kv82/n2rS5G3Ot4PTsu0mPvq92Bjg1fY043JgKUILtUz+uXJCngDt8B2Etqflobizp2vsRUv0MKHtjnXAqqY++p3YMi/htOb9RBh+GRjbXFyUzfH58VfM4HSkCl1bij97zo6PF8pTkLjKSJTDmU2eNq1RyEIPToK57/pJ8ytAnNf/RZZOONrtbVept9YQ9Z1k05nWSs0viil/IMTHO+LKwsLpyyhVVnWN/ckpVn52zBjZdKYnnVDxi6vMIqWcmGJB4r78Zj76jdgcPISsrDYrY7wtDT6MiWtt0IOC7vVulKnHZURyyjzaWYZaSqVPEGV1VwSbAsvOQ7jxbN25ALyEksBXzWN5sTkl79G6JlfMuSHiPrWH03vOL7OxZqpsUOA1LBwucEyj6WsUBxa0gQZJTIbFDxsKTO+Tx8FBOAFbik9N2a//hXCvs6VBBueCmCILnY1XPu6OfxfmEL2P2xXvz52kPWh9nbi9a1iTNNbQLNf/ga9gNNjDB7sbRj6+Zh3C5Zkw3oxYIwZpsEmof9q6W+Udvl+TPiwQ0cY0wbWNjMAPRfY+2mdDfofGYEw/5sIMPvlb9FVjbUQdQZAay5M+e4TZxe69T5c9sX0MI7HkFt37F6oFVZVhUagqVj7KM1DdXPb+001rsmTDI/9CoqWAJAI8Ogf8JQwQ8m+rextrHsYoz/jjg0EoD3ihnbdrpC+iQJl2cOmyWYdz1mHdlKLg1/4EUOAKJchxXXBxSkW0uOk/BSY/fovgP0nl8zqzMwaWRLTBj1PrJV4lnF5KACpVEzy8ZtorxlmAFtPBljRKlaGRpQp8gr5fIPhHtdraNJ/FwEuAAGYlfKtaVDhQz1QD2IyNrNTT3HxQNvPrnvI+9+28k+5rPy5Zrsl0rNBEtiFOVNUTBrVxtpmrKXBN2GZgy+wd5Zv9hbbTW3c0eBSGRfh0eMsMW8AABhISURBVJ39XkAGpMplbRJts0Mi2EfRTB9N8a72trHXuVyVIdXK0Iw7bJq1CRRB/342xn7o1bYSBWrFzhmj/5EEq+mxwUcol1SeXjZ3KzAhEVyAhVGfbV/xEC26rsVeZ1KgeLqWfrBFFCgJY8mnGKjxLCZPyz2KIDBqV/+3kZ+tTFXj8RmMzevJGUsx0IAkcBGDtbEyU8pgbqNJESN0Cf63DMyvkgHor4knvTDganhQfbGtsBREo7sdLneqeWYTcoZwzkDDJ/i1uv2SwGV0VY+o/hXT+7qPisngODgHQE2dEX6rBPCYYy4cxfnLBotu3OTRMn44JIHLoD6GK5zZrP555l+ZBX4b1tPLRk+P0me1J2vx+qyDo0S4ShbQGRLBVdTBE1Z5RuOh9h7lD8gxoSQa/mpfqLlkeTeFnVTZMK4Y0rcSBcoZwPAKX/SDNGbiUKnHnDLYic5jFFZMD8ngOsysjr9Q+uwCCH+zpW71DXbq/1f+azlISQf3syCLle40o7D4FS2jsiCV156E+qstf0mwVC5wQDI4gmJkOCwLX/uzwRDo3rYJvtS42erDTTxpz+ppeJjXEJXFtBPeAYf5QoE0zjy5Mfl6QIBkcAShOXQ4L1v7Y9Sl6jZmj50PU3dXKeOGWk4z9gZYHmTII5REdcO5q/pv0tG692dICEdQ1Ag6fpECPweFX55zgO9NB9u9RtDsGfIS8e8qQTwzJIUjCDWDb9oQpF+ZOF1xsUp6yeJir2HEL9NC6GO4sy0r3rrL/WJ8Kb3loaFspAZ+naErQPfeRYCD6Bo0rPiwrk9ufEokPNUo1Azl27H5h/dQylI+AXcgiirS5QhvIhNpGNbBlbbrRDCphtiVICEcRAyiqGFol5xcTAQxjoeTGiHJbVV/DQ0xksQu9sKFss1qfwzu9UjpDkeQKn62ZoANJITDgJnhtEl6iD/tmJZOaaMaIkxpQ4H/wJqWHravR25Pd6OwzsoMYCiL678tbSJfeyrrt4II8Bow64Su3z0jwzjklk83WxfPdP35oKEteXcdm6P55tP1Jo8W53NAYngFDEO6odkw9Lu6s91ZbmPZGXVu0Oa6QYk0WVa1Oeuqr2v/Rrmp8pgh+qdMR+vGBySHVwMGBowR1mymsjXWG5QclLG+3z1WdU6PITS5Vl70m2OxxtaowAYTajgDv6/Vb6tMc/+rGw9IDq8HnM7oRIFTXLzYHJkZGo13Ho5Bd5GrE5zNAxi4odexFl11ehHrqadb1V/Aby9cHX0Q4QzJ4fWgrmdkBSH8+Mo5TDMb2xWRBIiHCgc18Ck02cLycXIlnWaww9PJDsqUCj3yIp30VvaSBURIEK+HxbLNtPupbVvH1pk77gN/T6GVdFlmr+reXrvMwlpismDr8dZ9M2h00VXvRxXOkCBej7TcnQq3qPWFSjYWaVaVNZZaI9jf8o3ZkfzvRuV3v/GBp/ny0VJ8EkgOb8ASsy8R96pgxqE3HwKARK7DjnFkujqZvCR5LZ7Kx+Wlqcw11kTnt5x67CyIT7FRzgsOXjxWhs8CieEtWDRpXc9gCL+U9nca7S3XLy/zhhVjqB+TSgr7P6I2eapmfUJpwy6I8tg4j2AGKFli7vRoIT4HJIa3IbUO/ZJZgMDCY0fccRma2S5vjqf7FgKkZwGf2hg+alwWYuiqMTxFL0oz+KNS+VmRV6YYxI4eLMEngcTwNtDsCNVjjxVLH2CsILQZyTEO5kbHIVZQbKti0wwlRVFoLZ6LiFOdRFg7NGAni4a0mOAiwBthHHaRtMU8cB00RnyT4N2xXl7C1TBP34I+dTmbCFAgMbwJVcec/0Y4H15to23Pip5wbZGIQuqAEaTOpAiQejl6KfmHddRfpbVUsr/YtthREX1N9dedXyAxvAlF1ZDFiqwUtZNrWNEvQIGDFcs+Vp8LRwFbgh8WhfvLx5ErJn8a6DeUPwTR8HdMDKfH7JoBOiSGtyFH9rJiWx90Y00HPkGyRDtrAGhhREsu0AfOB0waFLghkDQ8TiBX7c0YT5pR4Xvn8/PCEQatdOcXSAxvBNQrjf/yKRQZtgkc1S7t8GcbA5SeoZqM3OQKQKG6PZDEEZ91Q+u1hQyrACHoM0RXkyEPFN4TQWJ4M2htVCWjgY2XF9zUBk11mC9cDKv4DsMhX0IO+4x4XoHufIfE8HZYGVEbS9OcSogpwtJlLT5At2s8o/fbtpk90qzUuDYdeDq4ZZyHHZTPUu2/59HSexJIDj8DXfWNE8DgHGeTutMIIgFaWD80cZx5NKeTS1fXsw50v6fe0iseKVNsH5IiSjiEBRLEz0HMAdUG4og8EMDh1dY/KAtyRCfr4+XHdvmWM011grERnO4hQEoKNP4c78VGUv+ERPGzYJkSa4w0whc2hImGVSQa/9RYUj4+NbYvz4IpKwyVVR9KWV3LycjgAsRPi3RyMwah5P8OkCx+HmBNjPqHMRhhoL3K5ozyIAQ6rjtUvm/0J7IEFcbT4BzXJYlGt3n4AY8V2XNBwvjZMGSAkwTIO1Hh9nplUoN9p2DnIq62CThyaZgo6ncGAj1YYE8FCePnI7QLiaigAx7SHjY3AkXdkGEewLuRVMv043BpMcGJbVYmFzjJlRJhfjl85SgW5fOL0xEXAEnjBhgHZ/fa9VjqgWolc7Ag7H3uWXNglQD0EnqvjOVTWXnahkXocEY46KXMDtFagZA0bgQQoFkjAZDa6iN7G4f02lAfUaSG7oExXlSiQKHILO+Jwmsr50mfGjZYpI81A+xB0rgRjDEd2tzpxcZAnSaQ1dhORnJqs3FZMdc9e8E41dTIkmUeGEWhjEYla/C7hAKJ41ZIfWuFBi3HZLuGFtmsqxvV7XcPxxG/dgGn5pOOAiFx3AyDqkHj0KmbRv2aDIMbe1m3U8F9vVn1FqLwk+reyQj/3JCXEwCJ46Yw2joRCI24Y1Ylj+ktrO7coiOmx3Bs5Ql7bImV6MKiapVUPJCXucDoXdRy6UcL6akgadwUw3CdRcm9EG0dBWpDaIhWCx3fxmG7DQpsWfqzLY1gGCjWWsFLz4DRo4X0VJA0botB/2GsWPcFRjsIhZxMI4zZ281DKHPhrJJsWx2OS0zUtVZW0C0fIGncFqnDWf9w3f0lYZwKf9EZHio+Lx4WIaNLXwsFEsdtsWgmo/aIVh4hgDt85pe2s50IT1f87UdMReQ+jxbRc0HiuC1s9EG9VRsmfdViAll1DNal/pFby/dU9do0ULbPuqSwmJAD04JY+5A4bozVeJxtLIzTBEHKukKlbI2dA1jpn5lgxpZaPfDoKffWgHLQzJuV0iChQOK4NTisW5ofLft0mc+N8brUMqCRoJZDN7Mc/JHtXfaucf9F1zPb7KyniH89qacbPkLyuDWKAfRqrAqYt99jBcbRHc5ToqZu77vAo+XzZJA8bo20UtplLbyk3owi7TMh55QLR7j2Ef0MoUDiuDksC5BhyDAVAD3utQusbGC9xNARZvQe4BhsFb/hJLHsw4oCLLQeUwwCIWncHtDo8qf7AEhirVO9iJWihKhmfnvxDrmQShz9MGH0ZOIZBRK5UEuLExqWLX20gJ4JEsbtwQBQC92sM0D2CGRdD0b+GNRbeRxe1eoyfRgOQpcDjxIwRJlyzfQsx+hf6J4XSBi3B+pwqPVlnYbQaw73jVtS+xEMKp0DbKrJrgNkGIwFP1l5NDjBG6tJ97xCwrg9UtfSJH85w9uVc3/J/zrml3hPVtsdhjJhK0gatwdVdqhAiGi8cQZgYTSLnqHSWQqdjm1tcck6NzydPo0rblOa7mNb0khISBo3R+hyWN+Zg3LHCohYtIHKGukrPmcp02WoX8BqWXHMBn2O7DIc79KQUHuKNQNchKRxc0Q8B7pX4kGNQR9WOQzxIqp0HIDKj9horPzQLI+cZf4N4zzSy5xmwpUw+cBbSBo3R2p1ifUMJWvZ784QTrFxMLqPzZPcB9MIcgZwktECmRPDigCYkB4tn+eCxHFzUHdTwd9cG3EJ1dx/5cEfLZ4ng+Rxc4SCpi98GXulC15Ig0h/GcyvcmFU9OVvtatEgC0kj5sj1XJQ26EJvmfHaCLRBGIyrKePd1aKG7ccPG1jxMiQBC5dBC4DaA8SyK1hLE8oi1aNpQoZBSrpgdr6DmJgkYfVSnHYIXyABn8YeQQ8rwBdBbm9CLCGBHJrZJK2FV1MLXeERatTjDo3HzJhHs9PzTK64vQiiDRmlmM/DPo8fjNko4UBEsitYY6yt1ykqgf3X3IImN0qFEDoEwpv5AP7Gy8eb+cz3e81JJCbg91fjnH9JdXfg2f1Z4ZC823Y+pf64+v2AyMeLZyngyRye9hYuEBtLO0szpA+neZxRRT4v4velhW28BD4elwuIQQnAU9TaoMTLBdgD5LIHVCH3HEIbmsntTSsjO4CzHiM+iiiaNiyUKCuGsetOudWK9Hpdq8hidwDUF74uTliZ6G0R7fKEKWB5jamiLNrnp7zUAG0fBZV0/SHl62aDaGooJkwQhK5A2LoblzfxDOntS4EreP8agSPQzidiFWAlRHS9ROCi79dVx/SBLADieQOiNWgMQNE7PIVrjDbIX1sbtkEdhoipNt+gx0PWATYQiK5PcxiWfRurzhNIsu6uFLdNkSJSuVCQ1F1JcFarVsWQWfpg48HLM8HeLRong8Sye3BgM5qCHbMA8OChjBhMEMMYzk5gvhPY1ast853ikUFKQpF0wcw9k2a0mC7kEhuj4xkGt/QBKlVDW0TpWmrnEG01IdVVQZ+JJXN8FUPMWX/QbAFXcV0qoUBEskdAK82mmM4HA/9ALU/wLN4jWyJNwziQN8d1kxL0yq+6ksLpQmElIBxw0dL5vkgkdwDnABC5zKbdQS+WzVxxIm+dgpZQLuQTO6BXv2Zqdw+PF8qW0CCGM3uTGyVys8XdX+r8EwZO98JG0go94Cx9rLkbfPB8WiG9PVgf357tmNKLIgtlsW4acwMh6kDs6jQJTNq9fDCGhLKfVBHd2hpVIpmmB9OcP+mB4kqIVqdBrw0FRhsqiyCcCtHtoEQjXQQNpBQ7gQOwghxOj1dq43rjS6z9bF/rCTKev+WPm03bthub6WXLE2unAhc+n8Zksq9kDOAFaXcq1rwHLKdds226LMHQ515L9ZTvOQc46cIO5BY7gYrDQFXndi+unk1do5HjF6BR8vjOSGx3Au9GHlUwBjxMw9gNIEaZ4C2LPXfSh/kdnWgEuxHoMdzsaCyurQ5A0zCHiSXe8E86xaY+cUi5uV9dVZjAUS+75u2Ys4Pq2vBBkp3eZ1jbnhonmsK2Iekci/AH+U4Hmsb2hiraVbU3Vt1gjGi9xE+V1Vs8IxRS2TpPqxyzN3txjEeLZJnhIRyNxhLF4p1El5r4wiPTsewksrjL2pPvaFiLquL4unBnGc2daDJIjZbPlokTwjJ5F6w6wAFok4tn5zadd3Xm25evhKqhduHZHInGMZzj4G4UqIhH4ZJYHCXw2JJE4h8WMdG49OcIViJOhShZlpOWEMyuRNinYdisBSNbKxo4EfwAUAQWPKZUYty53R6e60ddq3dxnkqEeAFSCb3wTIIozw51n8wFjCgwqdodxhCqwxAcZpxFBY8dA87zfsL9tFYaySsIJncBVGTMHoCLZu5DI5v6nZ/VxdWd3R4DbZ/lsQxe9BYZbQigdc4lIsAO5BM7gIbtHb/yXel2KfBfvet87w3JeRbH7d4yUl+tFyeDxLJXbCoGuKYSMluRudQSdr7LJTb9r5c0exLX7Wdt4+Wy/NBIrkLFo2LwH+PcyItVZK4WK+fBRER9qGdlJEiespZCpHzSvRBevmECl94gPY0oUIiuQuGQR4aXAoUogLoUraACr6Ke7Yh/duCX21tYl2wiXSzdyCZ3ANmtNYz3bt+SB4DmRj4mTxmnriO6FlAgUdt5DCf6ea16oMbMf8Ia0go94CtclYXLfgeyffmdmEuKEdoRZU34X2WQuzuih/waLk8ISSTe8Ciao2L9+wrNdUyFoFDZfMRNP7bNp/tEQ42lzBCIrkLitrxJex+2Cyh/DaUjbYyYDvXmNtjEXPMDhNoJ+yzmhF0uzeQRO6DYTxusWxDFjX7kN6KpRHL+uigAoNIhsQXV4nI8tJaO5RLRg+1Ffzw0XJ5Okgi9wHasMCACGu2kv2CRoauLqtG1EwYH/OCSmiqcTrVSaPyuih9eZaGawbYgyRyH1TVz2G+IcJT4kRMf3lpBcgRHf0DjicBOKsouP3QXNnGgxjcEc0Au5BE7gPDg7pWQ/IKkcJirehLHvB+ScVYQnclaazbvYEkch/Q/GbrOoL/XuOXFg3xZiUTvG3u4lC/o/t7hKgaP378aLk8HSSR+2BQyLBeuCDE8vyMsIKy6Te1trT3gjw9ExB8KgThM7Oj2dLTI2j8tJzh0XJ5Okgi90H28kIL4f3S/YX1E8sHRRagzx3M9/YmeI7gpeqhbFQmg7p0YudHlk649H8LieROiEK08D/7sO8s+PcYtbsBhOZHPvGlLPBgNJlyGZRSO9fPUSKe5SVO6mUyEVaQSO4FWh77pWlltXSO5VcfIlAWRFylt/YcgQvHebRQng8Syd1ANWy7pT58Bl789cE9vjki1ioOrCB53A1ckCoeldHNkhjBWQZkyOjWEtEc5qMvEpUS9ckB5b2RSmXPeE8TiGspCgUSx92QRW4sjGO9wwsj/ejfYvkU+sfD+orQ+FwKkfUWlqskDovvCglJ424wrn/LhyWNHWG1bwYzQCsBm4jbx6uyNGLwwngka3VuGQpEywyAsz1aME8FSeN+sKqqm353mP8I6PSnI62ngvWbxprpYlGt8gbbkqA6teiWD5A07gcO77sIy54E2GsduBDLuVLs8OJ2SgaMkDTuhx6QH5O6pZ/dOU63dHK7ksZ6Evnc37UO963MMtFbJwPL1YXqGurYUCiQOO4Hg2qXNZ+H/C3Nfb7Dk78akmhZPQ0C2fA0+XWjsdNJxvlK+riJABtIHPdD0XdaO4hwUudLG0sO9twoFhXCUYpWx5frZ2GUR+d1Zc9zSP/3IHncD6jFPL+mBhd/db2MQ/96bdhYKLTHE2UKb8Y4f2QLPKYJEGDtCTxaKk8GyeOOGFZ/Wy/fUxJjVfcPuril6rNyaKCTbz+U/q8hgdwTVH4qbZrrbRmoWw9+wrxxS6c5+7w22n+NJ1R7Pl+gPm/j0RJ5Okgi74NhXHbGZ3xMDbOuk3H+8qCkyPFyf6P1E/tyvHfSyTOJ5k0E2IEk8m4IhW61EjSXAnKr4SIwpGVmeB0VGv1ffsgiaCvdw9EbIwtoC0nk/WCob9gs4IZGrpgBegAoZgOE9PlwAZpI1cbB2I/eex66NI81ZcG2kEDeEXu2OhV1r3BhZ/s0eeLvpVTzyntoII8wQAJ5R+wqKsx/mDepwG0VwNnb+erb1TnUFb8DCeQ9ET4APN5QfOh7N3kshurSQpnJAIvO+kWTo5mYg30bHipfK+Kiq0D6v4Uk8p5AgIZaXpogPVPHRYmzdGIpqkaAiOvD1aoIy11LqQWOwrVXhApJ5D0BNfecBvqozrBlxoWW7ctOLaM+Q3kPokAMnMbxy9M1cBDd7i0kkXcFCMBanRjmS2tkUdjhJXZn4BTh04YwZ+bdPI+encecaIQCCeRdYffAodoJaf8+JJOHAMpo3Zk9ch+sTgrcw9K2KQqOAowb/+qPCMnoCfB6Va177PFHyn8UktP//5C2/wxIdMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqSECCFNDBBCmhgggTA0RQJgaIoAwNUQAYWqIAMLUEAGEqfEvOvQfEJ+NP/IAAAAASUVORK5CYII=" /><!-- --></p>
+<p>We are now ready to perform the spatio-temporal regression model. In this example, the data is already in <strong>WIDE</strong> format, meaning that every variable-year is a column in the dataset. Because of this, we directly include the lagged variables for all of the covariates as well as the lagged variable for the response, just as we had done in the simple linear model above.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#since this data is in wide format, include temporal lag for both explanatory and response variable manually</span>
+res &lt;-<span class="st"> </span><span class="kw">strm</span>(formula2, <span class="dt">id=</span><span class="st">&quot;STFID&quot;</span>, <span class="dt">data=</span>sptdmg_sf, <span class="dt">listw =</span> listwk, <span class="dt">time=</span><span class="dv">2</span>,<span class="dt">wide=</span><span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## The spatio-temporal regression model fitted:</code></pre>
+<pre><code>## LNP1000 ~ LNP0090 + POLD00 + POLD90</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(res)</code></pre></div>
+<pre><code>## 
+## Call:spatialreg::errorsarlm(formula = modframe, listw = listw)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.667816 -0.068463 -0.010631  0.055872  1.053517 
+## 
+## Type: error 
+## Coefficients: (asymptotic standard errors) 
+##               Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)  0.0856035  0.0099058  8.6418  &lt; 2e-16
+## LNP0090      0.0312120  0.0212166  1.4711  0.14126
+## POLD00      -0.1992946  0.0863089 -2.3091  0.02094
+## POLD90      -0.1665145  0.0789090 -2.1102  0.03484
+## 
+## Lambda: 0.28547, LR test value: 78.083, p-value: &lt; 2.22e-16
+## Asymptotic standard error: 0.030315
+##     z-value: 9.4169, p-value: &lt; 2.22e-16
+## Wald statistic: 88.678, p-value: &lt; 2.22e-16
+## 
+## Log likelihood: 1115.203 for error model
+## ML residual variance (sigma squared): 0.017069, (sigma: 0.13065)
+## Number of observations: 1837 
+## Number of parameters estimated: 6 
+## AIC: -2218.4, (AIC for lm: -2142.3)</code></pre>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

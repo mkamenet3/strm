@@ -62,7 +62,7 @@ The first data set we will use is the **Produc** data set from the `Ecdat` packa
 - `state`: state in the United States
 - `gsp`:
 - `pcap`: private capital stock.
-- `pc`: public captial.
+- `pc`: public capital.
 - `emp`: labor input measured by employment in non-agricultural payrolls.
 - `unemp`: state unemployment rate.
 
@@ -94,7 +94,7 @@ Next, we perform the spatio-temporal regression model. We first create a formula
 
 For this analysis, we will limit the data to only 1970 and 1971 - two time periods.
 
-We se the `strm()` function from the `strm` package. The first argument is the model formula. Given that the data is in *long* format, `strm` will create the lagged values for you as well as the lagged response in the right-hand side of the model. The next argument is `id`, which we set to "state" as each observation is taken at the state level. We then specify the name of the data set (`data=Produc`), the list of spatial weights (`listw = usalw`), `time=2`, we tell `strm` that the data is in *long* format by setting `wide=FALSE`, and lastly we pass an argument to filter observations where `year` is equal to either 1970 or 1971 (2 time periods).
+We use the `strm()` function from the `strm` package. The first argument is the model formula. Given that the data is in *long* format, `strm` will create the lagged values for you as well as the lagged response in the right-hand side of the model. The next argument is `id`, which we set to "state" as each observation is taken at the state level. We then specify the name of the data set (`data=Produc`), the list of spatial weights (`listw = usalw`), `time=2`, we tell `strm` that the data is in *long* format by setting `wide=FALSE`, and lastly we pass an argument to filter observations where `year` is equal to either 1970 or 1971 (2 time periods).
 
 
 
