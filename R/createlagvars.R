@@ -2,7 +2,7 @@
 #' @title 
 #' createlagvars
 #' @description Creates lagged explanatory and response variables for data in long format.
-#' @param data Name of dataframe.
+#' @param data Name of dataframe that has been transformed in strm (object \code{modframe0}).
 #' @param vars Response and explanatory variables to be lagged.
 #' @param id Group identifier (example: state).
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
@@ -11,16 +11,45 @@
 #' @export
 #' @examples 
 #' \donttest{
-#'  outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,wide = FALSE,year==1970 | year==1971)}
-createlagvars <- function(data, vars, id, time=time, wide, ...){
-    filter_args <- rlang::enquos(...)
+#'  outdf<- createlagvars(data = modframe0, vars=c(y,xs), id="state", time=2,wide = FALSE, filter_options="year==1970 | year==1971")}
+createlagvars <- function(data, vars, id, time=time, wide, filter_options){
+    print(filter_options)
+#createlagvars <- function(data, vars, id, time=time, wide, ...){
+    #filter_args <- rlang::enquos(...)
     keepvars <- c(vars, rlang::as_name(id))
+    print(keepvars)
     id <- rlang::enquo(id)
     timeseq <- seq(time-1)
-    outdf <- data %>%
-        dplyr::filter(!!!filter_args) %>%
-        dplyr::select(!!keepvars)
     
+    
+    if(is.null(filter_options)){
+       print("a")
+        outdf <- data %>%
+            dplyr::select(!!keepvars)
+        print("ok0")
+    } else {
+        print("b")
+        outdf <- data %>%
+            dplyr::filter(eval(parse(text = filter_options))) %>%
+            dplyr::select(!!keepvars)
+        print("oka")
+    }
+    #     #filter_args <- parse(text = filter_options)
+    #     #print(filter_args)    
+    #     outdf <- data %>%
+    #         #dplyr::filter(!!!filter_args) %>%
+    #         dplyr::filter(eval(parse(filter_options))) %>%
+    #         dplyr::select(!!keepvars)
+    # } else {
+    #     outdf <- data %>%
+    #         #dplyr::filter(!!!filter_args) %>%
+    #         #dplyr::filter(eval(filter_args)) %>%
+    #         dplyr::select(!!keepvars)
+    # }
+    # #filter_args <- rlang::enquos(filter_options)
+    # 
+   
+    print("ok2")
     if (wide == FALSE){
         if(time>1){
             lags <- NULL
