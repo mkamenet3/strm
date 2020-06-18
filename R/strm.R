@@ -8,8 +8,8 @@
 #' @param listw Weights list object.
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.
-#' @param filter_options Additional arguments to be passed to \code{dplyr::filter()}.
-#' @param errorsarlm_options Additional arguments to be passed to \code{spatialreg::errorsarlm()}.
+#' @param filter_options Additional arguments to be passed to \code{dplyr::filter()}. Default is \code{NULL}.
+#' @param ... Additional arguments to be passed to \code{spatialreg::errorsarlm()}.
 #' @details Any transformed variables should be included in the formula statement. For example, to request \code{gdp} natural log-transformed, you would build the model formula as \code{log(gdp)}.
 #' @export
 #' @examples 
@@ -33,10 +33,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
     if(time==1){
         print(paste0("time is: ", time))
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
-        #outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=1,  wide,...)
-        #varss=c(y,xs)
-        # outdf <- do.call(createlagvars, as.list(data = modframe0, vars=vars, id=id, time=1,  wide=wide,
-        #                                         filter_options))
         outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=1,wide, filter_options)
         #Put formula together
         rhs <- paste(c(xs), collapse=" + ")
@@ -52,7 +48,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         message("The spatio-temporal regression model fitted:")
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
-        #res<- do.call(spatialreg::errorsarlm, as.list(c(modframe, listw=listw, errorsarlm_options)))
         res<- spatialreg::errorsarlm(modframe,
                                      listw=listw,...)
     }
@@ -60,10 +55,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         print(filter_options)
         if (wide==FALSE){
             outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=time,wide, filter_options)
-            #vars=c(y,xs)
-            #print(str(vars))
-            #outdf <- do.call(createlagvars, as.list(c(modframe0, vars, id, time, wide,
-             #                                       filter_options)))
             #add in temporally lagged response and temporally lagged explanatory variable into formula
             xs_Tlags <- rep(list(0), (time-1))
             y_lags <- rep(list(0), (time-1))
@@ -76,11 +67,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
             #Put formula together
             rhs <- paste(c(xs,xs_Tlags, y_lags), collapse=" + ")
         } else {
-            #outdf <- data
-            #outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=time,wide, ...)
-            #vars=vars
-            # outdf <- do.call(createlagvars, as.list(data = modframe0, vars=vars, id=id, time=time,  wide=wide,
-            #                                         filter_options=filter_options))
             outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=time,wide, filter_options)
             #Put formula together
             rhs <- paste(c(xs), collapse=" + ")
@@ -96,8 +82,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         message("The spatio-temporal regression model fitted:")
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
-        #res<- do.call(spatialreg::errorsarlm, as.list(c(modframe, listw, errorsarlm_options)))
-        #res<- do.call(spatialreg::errorsarlm, as.list(modframe, listw=listw, errorsarlm_options))
         res<- spatialreg::errorsarlm(modframe, listw=listw, ...)
         
     }
