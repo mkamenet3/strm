@@ -77,5 +77,5 @@ test_that("Wide format 2", {
 test_that("Wide format 3", {
     form1 <- as.formula(y_2005 ~ x1_2000 + x1_2005 + x2_2000 + x2_2005 + y_2000)
     #this should give an error because size of list
-    expect_error(strm(form1, id="id", data = datf_wide, listw = listw1, time=2, wide=TRUE, id > 10))
+    expect_error(strm(form1, id="id", data = datf_wide, listw = listw1, time=2, wide=TRUE, "id > 10"))
 })

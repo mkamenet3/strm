@@ -27,22 +27,23 @@ xs_wide<- c("x1_2004", "x1_2003", "x1_2002", "x1_2001", "x1_2000",
 
 
 
-test_that("Filtering works correctly", {
+test_that("Filtering works correctly 1", {
     #expect no error
-    expect_error(createlagvars(data = datf, vars=c(y,xs), id="id", time=2, wide=FALSE,year==2000 | year==2001),NA)
+    expect_error(createlagvars(data = datf, vars=c(y,xs), id="id", time=2, wide=FALSE,
+                               filter_options="year==2000 | year==2001"),NA)
  
 })
 
-test_that("Filtering works correctly", {
+test_that("Filtering works correctly 2", {
     #no filtering
     datfsub<- subset(datf, year==2000 | year==2001)
-    expect_error(createlagvars(data = datfsub, vars=c(y,xs), id="id", time=2, wide=FALSE),NA)
+    expect_error(createlagvars(data = datfsub, vars=c(y,xs), id="id", time=2, wide=FALSE, filter_options=NULL),NA)
 })
 
-test_that("Filtering works correctly", {
+test_that("Filtering works correctly 3", {
     #no filtering
     datfsub<- subset(datf, year==2000 | year==2001)
     #this should give no error
-    expect_error(createlagvars(data = datf_wide, vars=c(y_wide,xs_wide), id="id", time=5, wide=TRUE), NA)
+    expect_error(createlagvars(data = datf_wide, vars=c(y_wide,xs_wide), id="id", time=5, wide=TRUE, filter_options=NULL), NA)
     
 })

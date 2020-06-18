@@ -31,6 +31,7 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
     #combine transformed data frame with original dataframe (so any other filtering can be passed to createlagvars)
     modframe0 <- cbind.data.frame(model.frame(formin, data=data),  data[,which(names(data)%in% c(y,xs)==FALSE)])
     if(time==1){
+        print(paste0("time is: ", time))
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
         #outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=1,  wide,...)
         #varss=c(y,xs)
@@ -51,9 +52,9 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         message("The spatio-temporal regression model fitted:")
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
-        res<- do.call(spatialreg::errorsarlm, as.list(c(modframe, listw=listw, errorsarlm_options)))
-        # res<- spatialreg::errorsarlm(modframe,
-        #                              listw=listw)
+        #res<- do.call(spatialreg::errorsarlm, as.list(c(modframe, listw=listw, errorsarlm_options)))
+        res<- spatialreg::errorsarlm(modframe,
+                                     listw=listw,...)
     }
     else {
         print(filter_options)
