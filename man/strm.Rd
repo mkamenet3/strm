@@ -4,7 +4,8 @@
 \alias{strm}
 \title{strm}
 \usage{
-strm(formula, id, data, listw, time = 2, wide = FALSE, ...)
+strm(formula, id, data, listw, time = 2, wide = FALSE,
+  filter_options = NULL, ...)
 }
 \arguments{
 \item{formula}{Model formula specified by user (without lags). Any transformed variables, such as logged-variables, should be specified in the model formula.}
@@ -19,7 +20,9 @@ strm(formula, id, data, listw, time = 2, wide = FALSE, ...)
 
 \item{wide}{Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.}
 
-\item{...}{Arguments to be passed to \code{dplyr::filter()}.}
+\item{filter_options}{Additional arguments to be passed to \code{dplyr::filter()}. Default is \code{NULL}.}
+
+\item{...}{Additional arguments to be passed to \code{spatialreg::errorsarlm()}.}
 }
 \description{
 The \code{strm} function provides maximum likelihood estimation of a spatio-temporal simultaneous autoregressive lag error model. This package is built on the \code{errorsarlm()} function from the \code{spatialreg} package.
@@ -34,5 +37,6 @@ data("Produc", package = "Ecdat")
 data("usaww")
 usalw <- mat2listw(usaww)
 formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
-out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, year==1970 | year==1971)
+out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, filter_options="year==1970 | year==1971")
+out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, filter_options="year==1970 | year==1971", method="Chebyshev")
 }

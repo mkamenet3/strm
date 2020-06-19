@@ -1,6 +1,8 @@
 ---
 title: "An Introduction to strm"
 output: rmarkdown::html_vignette
+header-includes:
+   - \usepackage{float}
 vignette: >
   %\VignetteIndexEntry{Intro to strm}
   %\VignetteEngine{knitr::rmarkdown}
@@ -25,7 +27,7 @@ library(knitr)
 library(Ecdat)
 ```
 
-`strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). Based on Elhorst 2001, 2003, and 2010a, the approach here fits a spatial error model while incorporating a temporally lagged response variable, temporally lagged explanatory variables, and spatially lagged explanatory variables.
+`strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 
 This package builds on the `errorsarlm()` function from the `spatialreg` package.
 
@@ -100,7 +102,9 @@ We use the `strm()` function from the `strm` package. The first argument is the 
 
 ```{r}
 formula1 <-as.formula(log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
-out <- strm(formula1, id="state", data=Produc, listw = usalw, time=2,wide=FALSE,year==1970 | year==1971)
+out <- strm(formula1, id="state", data=Produc, listw = usalw, time=2,wide=FALSE,
+            filter_options="year==1970 | year==1971")
+
 summary(out)
 
 ```
@@ -115,7 +119,7 @@ As the number of time periods in the data increase, so do the number of lags. If
 ```{r}
 formula2 <-as.formula(log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
 out <- strm(formula2, id="state", data=Produc, listw= usalw, time=3,
-            wide=FALSE,year==1970 | year==1971 | year ==1972)
+            wide=FALSE,filter_options="year==1970 | year==1971 | year ==1972")
 
 ```
 
@@ -141,13 +145,17 @@ We use the example from *Spatial Regression Models for the Social Sciences* Chi 
 We load the shapefile in using the `readOGR()` from the `rgdal` package. 
 
 ```{r}
-sptdmg <- readOGR("../inst/extdata/sptdmg3/.", "sptdmg3")
+#sptdmg <- readOGR("../inst/extdata/sptdmg3/.", "sptdmg3")
+data(sptdmg)
 class(sptdmg)
 names(sptdmg)
 ```
 
 
 First, fit a standard linear regression model with population growth from 2000 to 2010 as the response variable and population growth from 1990 to 2000, the old population in 2000, and the old population in 1990 as the explanatory variables.
+
+
+
 
 ```{r}
 formula2 <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
@@ -175,8 +183,8 @@ Next, we create a spatial weights matrix based on 4-nearest neighbors. We extrac
 #knn4
 coords <-st_coordinates(st_centroid(sptdmg_sf)) #extract centroid of each  minor civil division
 col.knn <- knearneigh(coords, k=4)
-nbknn <- knn2nb(col.knn)
-listwk <- nb2listw(nbknn, style="W", zero.policy = TRUE)
+nbknn <- knn2nb(col.knn, row.names = sptdmg$STFID)
+listwk <- nb2listw(nbknn, style="W")
 plot(sptdmg, main="Wisconsin: 4 Nearest-Neighbors"); plot(nbknn, coords,col="forestgreen", add=TRUE)
 ```
 
@@ -190,5 +198,22 @@ summary(res)
 ```
 
 
+
+
+```{r test, echo=FALSE, include=FALSE, eval=FALSE}
+moran.test(sptdmg$LNP1000, listwk, alternative = "two.sided")
+moran.test(sptdmg$LNP0090, listwk, alternative = "two.sided")
+moran.test(sptdmg$POLD00, listwk, alternative = "two.sided")
+moran.test(sptdmg$PUNMP00, listwk, alternative = "two.sided")
+moran.test(sptdmg$ACSAIR, listwk, alternative = "two.sided")
+moran.test(sptdmg$PFRST, listwk, alternative = "two.sided")
+moran.test(sptdmg$DEVPB, listwk, alternative = "two.sided")
+
+formulatest <- as.formula(LNP1000 ~ LNP0090 + POLD00 + PUNMP00 + ACSAIR + PFRST + DEVPB )
+m2 <- lm(formulatest, data = sptdmg)
+summary(m2)
+
+moran.test(m2$residuals, listwk, alternative = "two.sided")
+```
 
 
