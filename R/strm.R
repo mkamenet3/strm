@@ -17,7 +17,8 @@
 #' data("usaww")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, year==1970 | year==1971)
+#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, filter_options="year==1970 | year==1971")
+#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, filter_options="year==1970 | year==1971", method="Chebyshev")
 strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, ...){
     formin <- formula
     if(missing(wide) | wide == FALSE){
@@ -31,7 +32,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
     #combine transformed data frame with original dataframe (so any other filtering can be passed to createlagvars)
     modframe0 <- cbind.data.frame(model.frame(formin, data=data),  data[,which(names(data)%in% c(y,xs)==FALSE)])
     if(time==1){
-        print(paste0("time is: ", time))
         warning("You have set time = 1, indicating a spatial error model. No temporal component will be assessed.")
         outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=1,wide, filter_options)
         #Put formula together
@@ -52,7 +52,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
                                      listw=listw,...)
     }
     else {
-        print(filter_options)
         if (wide==FALSE){
             outdf <- createlagvars(data = modframe0, vars=c(y,xs), id=id, time=time,wide, filter_options)
             #add in temporally lagged response and temporally lagged explanatory variable into formula
@@ -79,11 +78,11 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         rhs <- gsub("*\\(*)*","",rhs)
     
         formout <- as.formula(paste0(y," ~ ", rhs))
+        #message("The spatio-temporal regression model fitted:")
         message("The spatio-temporal regression model fitted:")
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
         res<- spatialreg::errorsarlm(modframe, listw=listw, ...)
-        
     }
     return(res)
 }

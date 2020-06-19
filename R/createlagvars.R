@@ -17,7 +17,6 @@
 
 createlagvars <- function(data, vars, id, time=time, wide, filter_options){
     keepvars <- c(vars, rlang::as_name(id))
-    print(keepvars)
     id <- rlang::enquo(id)
     timeseq <- seq(time-1)
     if(is.null(filter_options)){

@@ -79,3 +79,35 @@ test_that("Wide format 3", {
     #this should give an error because size of list
     expect_error(strm(form1, id="id", data = datf_wide, listw = listw1, time=2, wide=TRUE, "id > 10"))
 })
+
+test_that("Additional params passed to errorsarlm 1", {
+    form1 <- as.formula(y ~ x1 + x2)
+    expect_message(strm(form1, id="id", data = datf, listw = listw0, time=2, wide=FALSE, method="Chebyshev"),
+                   regexp = "The spatio-temporal regression model fitted:", 
+                   "y ~ x1 + x2 + x1.Tlag1 + x2.Tlag1 + y.Tlag1")
+})
+
+test_that("Additional params passed to errorsarlm 2", {
+    form1 <- as.formula(y ~ x1 + x2)
+    ev <- eigenw(listw0)
+    expect_message(strm(form1, id="id", data = datf, listw = listw0, time=2, wide=FALSE, control=list(pre_eig=ev)),
+                   regexp = "The spatio-temporal regression model fitted:", 
+                   "y ~ x1 + x2 + x1.Tlag1 + x2.Tlag1 + y.Tlag1")
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
