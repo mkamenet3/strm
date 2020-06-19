@@ -146,9 +146,9 @@ We load the shapefile in using the `readOGR()` from the `rgdal` package.
 
 ```{r}
 #sptdmg <- readOGR("../inst/extdata/sptdmg3/.", "sptdmg3")
-data(sptdmg)
-class(sptdmg)
-names(sptdmg)
+data(sptdmg3)
+class(sptdmg3)
+names(sptdmg3)
 ```
 
 
