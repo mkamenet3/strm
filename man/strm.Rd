@@ -33,6 +33,8 @@ Spatio-temporal regression model
 Any transformed variables should be included in the formula statement. For example, to request \code{gdp} natural log-transformed, you would build the model formula as \code{log(gdp)}.
 }
 \examples{
+library(splm)
+library(spdep)
 data("Produc", package = "Ecdat")
 data("usaww")
 usalw <- mat2listw(usaww)

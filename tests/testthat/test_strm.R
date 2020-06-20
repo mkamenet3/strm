@@ -20,6 +20,13 @@ nb1 <- cell2nb(nrow=5,ncol=10, type="queen")
 listw1 <- nb2listw(nb1, style="W")
 
 
+test_that("Expect no error", {
+    #expect no error
+    form0 <- as.formula(y ~ x1 +x2)
+    expect_error(strm(form0, id="id", data=datf, listw = listw0,
+                      time=2, wide=FALSE),NA)
+})
+
 
 test_that("Other transformations that are in () are correctly handled 1", {
     #expect no error
@@ -45,7 +52,7 @@ test_that("Other transformations that are in () are correctly handled 3", {
     #expect no error
     form0 <- as.formula(sqrt(y) ~ x1 + x2)
     expect_error(strm(form0, id="id", data=datf, listw = listw0,
-                      time=2, wide=FALSE), NA)
+                      time=2, wide=FALSE),NA)
 })
 
 test_that("Check model structure", {

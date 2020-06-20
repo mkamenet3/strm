@@ -145,7 +145,6 @@ We use the example from *Spatial Regression Models for the Social Sciences* Chi 
 We load the shapefile in using the `readOGR()` from the `rgdal` package. 
 
 ```{r}
-#sptdmg <- readOGR("../inst/extdata/sptdmg3/.", "sptdmg3")
 data(sptdmg3)
 class(sptdmg3)
 names(sptdmg3)
@@ -159,7 +158,7 @@ First, fit a standard linear regression model with population growth from 2000 t
 
 ```{r}
 formula2 <- as.formula(LNP1000 ~ LNP0090 + POLD00 + POLD90)
-m2 <- lm(formula2, data = sptdmg)
+m2 <- lm(formula2, data = sptdmg3)
 summary(m2)
 
 ```
@@ -172,8 +171,8 @@ We first convert the `SpatialPolygonsDataFrame` to a simple features or `sf` obj
 
 ```{r}
 #convert to simple features
-sptdmg_sf <- sf::st_as_sf(sptdmg)
-class(sptdmg_sf)
+sptdmg3_sf <- sf::st_as_sf(sptdmg3)
+class(sptdmg3_sf)
 ```
 
 
@@ -181,11 +180,11 @@ Next, we create a spatial weights matrix based on 4-nearest neighbors. We extrac
 
 ```{r}
 #knn4
-coords <-st_coordinates(st_centroid(sptdmg_sf)) #extract centroid of each  minor civil division
+coords <-st_coordinates(st_centroid(sptdmg3_sf)) #extract centroid of each  minor civil division
 col.knn <- knearneigh(coords, k=4)
-nbknn <- knn2nb(col.knn, row.names = sptdmg$STFID)
+nbknn <- knn2nb(col.knn, row.names = sptdmg3$STFID)
 listwk <- nb2listw(nbknn, style="W")
-plot(sptdmg, main="Wisconsin: 4 Nearest-Neighbors"); plot(nbknn, coords,col="forestgreen", add=TRUE)
+plot(sptdmg3, main="Wisconsin: 4 Nearest-Neighbors"); plot(nbknn, coords,col="forestgreen", add=TRUE)
 ```
 
 
@@ -193,7 +192,7 @@ We are now ready to perform the spatio-temporal regression model. In this exampl
 
 ```{r}
 #since this data is in wide format, include temporal lag for both explanatory and response variable manually
-res <- strm(formula2, id="STFID", data=sptdmg_sf, listw = listwk, time=2,wide=TRUE)
+res <- strm(formula2, id="STFID", data=sptdmg3_sf, listw = listwk, time=2,wide=TRUE)
 summary(res)
 ```
 
@@ -201,16 +200,16 @@ summary(res)
 
 
 ```{r test, echo=FALSE, include=FALSE, eval=FALSE}
-moran.test(sptdmg$LNP1000, listwk, alternative = "two.sided")
-moran.test(sptdmg$LNP0090, listwk, alternative = "two.sided")
-moran.test(sptdmg$POLD00, listwk, alternative = "two.sided")
-moran.test(sptdmg$PUNMP00, listwk, alternative = "two.sided")
-moran.test(sptdmg$ACSAIR, listwk, alternative = "two.sided")
-moran.test(sptdmg$PFRST, listwk, alternative = "two.sided")
-moran.test(sptdmg$DEVPB, listwk, alternative = "two.sided")
+moran.test(sptdmg3$LNP1000, listwk, alternative = "two.sided")
+moran.test(sptdmg3$LNP0090, listwk, alternative = "two.sided")
+moran.test(sptdmg3$POLD00, listwk, alternative = "two.sided")
+moran.test(sptdmg3$PUNMP00, listwk, alternative = "two.sided")
+moran.test(sptdmg3$ACSAIR, listwk, alternative = "two.sided")
+moran.test(sptdmg3$PFRST, listwk, alternative = "two.sided")
+moran.test(sptdmg3$DEVPB, listwk, alternative = "two.sided")
 
 formulatest <- as.formula(LNP1000 ~ LNP0090 + POLD00 + PUNMP00 + ACSAIR + PFRST + DEVPB )
-m2 <- lm(formulatest, data = sptdmg)
+m2 <- lm(formulatest, data = sptdmg3)
 summary(m2)
 
 moran.test(m2$residuals, listwk, alternative = "two.sided")

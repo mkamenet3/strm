@@ -85,6 +85,7 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
         res<- spatialreg::errorsarlm(modframe, listw=listw, ...)
+        #res<- spatialreg::errorsarlm(modframe, listw=listw)
     }
     return(res)
 }
