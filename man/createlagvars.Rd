@@ -4,10 +4,10 @@
 \alias{createlagvars}
 \title{createlagvars}
 \usage{
-createlagvars(data, vars, id, time = time, wide, ...)
+createlagvars(data, vars, id, time = time, wide, filter_options)
 }
 \arguments{
-\item{data}{Name of dataframe.}
+\item{data}{Name of dataframe that has been transformed in strm (object \code{modframe0}).}
 
 \item{vars}{Response and explanatory variables to be lagged.}
 
@@ -17,7 +17,7 @@ createlagvars(data, vars, id, time = time, wide, ...)
 
 \item{wide}{Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. Default is \code{FALSE}.}
 
-\item{...}{Arguments to be passed to \code{dplyr::filter()}}
+\item{filter_options}{Additional arguments to be passed to \code{dplyr::filter()}.}
 }
 \description{
 Creates lagged explanatory and response variables for data in long format.
@@ -27,5 +27,7 @@ Create lagged and transformed variables
 }
 \examples{
 \donttest{
- outdf<- createlagvars(data = Produc, vars=c(y,xs), id="state", time=2,wide = FALSE,year==1970 | year==1971)}
+ outdf<- createlagvars(data = modframe0, vars=c(y,xs), id="state", time=2,wide = FALSE, filter_options="year==1970 | year==1971")}
+\donttest{
+ outdf<- createlagvars(data = modframe0, vars=c(y,xs), id="state", time=2,wide = FALSE, filter_options=NULL)}
 }
