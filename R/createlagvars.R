@@ -11,16 +11,18 @@
 #' @export
 #' @examples 
 #' \donttest{
-#'  outdf<- createlagvars(data = modframe0, vars=c(y,xs), id="state", time=2,wide = FALSE, filter_options="year==1970 | year==1971")}
+#'  outdf<- createlagvars(data = modframe0, vars=c(y,xs),
+#'   id="state", time=2,wide = FALSE, 
+#'   filter_options="year==1970 | year==1971")}
 #' \donttest{
-#'  outdf<- createlagvars(data = modframe0, vars=c(y,xs), id="state", time=2,wide = FALSE, filter_options=NULL)}
+#'  outdf<- createlagvars(data = modframe0, vars=c(y,xs), 
+#'  id="state", time=2,wide = FALSE, filter_options=NULL)}
 #'  @importFrom rlang enquo as_name
 #'  @importFrom dplyr select filter mutate
 #'  @importFrom tidyr nest unnest
-
 createlagvars <- function(data, vars, id, time=time, wide, filter_options){
-    keepvars <- c(vars, as_name(id))
-    id <- enquo(id)
+    keepvars <- c(vars, rlang::as_name(id))
+    id <- rlang::enquo(id)
     timeseq <- seq(time-1)
     if(is.null(filter_options)){
         outdf <- data %>%

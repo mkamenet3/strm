@@ -3,8 +3,8 @@ Title: Spatio-temporal Regression Model
 Version: 0.1
 Authors@R: c(
         person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre")),
-        person("Guangqing", "Chi", , "guangqingchi@gmail.com", role = c("aut")),
-        person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = c("aut")))
+        person("Guangqing", "Chi", ,"guangqingchi@gmail.com", role = "aut"),
+        person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = "aut"))
 Description: This package implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 Depends:
     R (>= 3.6.1),
@@ -12,10 +12,9 @@ Depends:
     rlang (>= 0.4.2),
     dplyr (>= 0.8.3),
     tidyr (>= 1.0.0),
-    purrr (>= 0.3.3)
+    purrr (>= 0.3.3),
+    magrittr (>= 1.5)
 Imports:
-    magrittr (>= 1.5),
-    sf (>= 0.8.0),
     rgdal (>= 1.4.8),
     spdep (>= 1.1.3),
     lazyeval,
@@ -24,8 +23,7 @@ Imports:
     methods,
     graphics,
     utils,
-    knitr
-SUggests:
+    knitr,
     splm (>= 1.4.11),
     Ecdat
 VignetteBuilder: knitr

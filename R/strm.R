@@ -19,8 +19,14 @@
 #' data("usaww")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
-#' strm(formula, id="state", data=Produc, listw = usalw, time=2,wide=FALSE,filter_options="year==1970 | year==1971")
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, filter_options="year==1970 | year==1971", method="Chebyshev")
+#' out1 <- strm(formula, id="state", data=Produc, 
+#' listw = usalw, time=2,wide=FALSE,
+#' filter_options="year==1970 | year==1971")
+#' 
+#' out2 <- strm(formula, id="state", data=Produc, 
+#' listw= usalw, time=2, wide = FALSE, 
+#' filter_options="year==1970 | year==1971",
+#'  method="Chebyshev")
 #' @import spatialreg
 strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, ...){
     formin <- formula
