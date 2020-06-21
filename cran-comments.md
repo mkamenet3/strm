@@ -6,8 +6,11 @@
 
 ### Notes:
 
-* 
+* 0 Notes
 
+### Warnings:
+
+* Dependence on R version '3.6.1' not with patchlevel 0
 
 ## Downstream dependencies
 
