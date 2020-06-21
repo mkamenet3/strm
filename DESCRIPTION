@@ -3,23 +3,20 @@ Title: Spatio-temporal Regression Model
 Version: 0.1
 Authors@R: c(
         person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre")),
-        person("Guangqing", "Chi", , "guangqingchi@gmail.com", role = c("aut")),
-        person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = c("aut")))
+        person("Guangqing", "Chi", ,"guangqingchi@gmail.com", role = "aut"),
+        person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = "aut"))
 Description: This package implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 Depends:
-    R (>= 3.6.1)
+    R (>= 3.6.1),
+    spatialreg (>= 1.1.5),
+    dplyr (>= 0.8.3)
 Imports:
-    dplyr (>= 0.8.3),
+    rlang (>= 0.4.2),
     tidyr (>= 1.0.0),
     purrr (>= 0.3.3),
-    spatialreg (>= 1.1.5),
-    rlang (>= 0.4.2),
     magrittr (>= 1.5),
-    sf (>= 0.8.0),
     rgdal (>= 1.4.8),
     spdep (>= 1.1.3),
-    splm (>= 1.4.11),
-    Ecdat,
     lazyeval,
     stats,
     grDevices,
@@ -27,6 +24,12 @@ Imports:
     graphics,
     utils,
     knitr
+Suggests:
+    sf (>= 0.9-4),
+    splm (>= 1.4.11),
+    Ecdat,
+    testthat,
+    rmarkdown
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)
@@ -35,4 +38,3 @@ BugReports: https://github.com/mkamenet3/strm/issues
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 RoxygenNote: 7.0.1
-Suggests: testthat, rmarkdown

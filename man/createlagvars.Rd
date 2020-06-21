@@ -25,9 +25,3 @@ Creates lagged explanatory and response variables for data in long format.
 \details{
 Create lagged and transformed variables
 }
-\examples{
-\donttest{
- outdf<- createlagvars(data = modframe0, vars=c(y,xs), id="state", time=2,wide = FALSE, filter_options="year==1970 | year==1971")}
-\donttest{
- outdf<- createlagvars(data = modframe0, vars=c(y,xs), id="state", time=2,wide = FALSE, filter_options=NULL)}
-}

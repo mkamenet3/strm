@@ -1,6 +1,12 @@
 library(testthat)
-library(tidyr)
+#library(tidyr)
+library(dplyr)
+#library(magrittr)
 library(spdep)
+#library(spatialreg)
+#library(rlang)
+#library(purrr)
+#library(magrittr)
 context("Executing the spatio-temporal regression model, strm.")
 #set up
 set.seed(2)

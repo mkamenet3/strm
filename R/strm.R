@@ -13,14 +13,21 @@
 #' @details Any transformed variables should be included in the formula statement. For example, to request \code{gdp} natural log-transformed, you would build the model formula as \code{log(gdp)}.
 #' @export
 #' @examples 
-#' library(splm)
 #' library(spdep)
+#' library(dplyr)
 #' data("Produc", package = "Ecdat")
-#' data("usaww")
+#' data("usaww", package = "splm")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, filter_options="year==1970 | year==1971")
-#' out <- strm(formula, id="state", data=Produc, listw= usalw, time=2, wide = FALSE, filter_options="year==1970 | year==1971", method="Chebyshev")
+#' out1 <- strm(formula, id="state", data=Produc, 
+#' listw = usalw, time=2,wide=FALSE,
+#' filter_options="year==1970 | year==1971")
+#' 
+#' out2 <- strm(formula, id="state", data=Produc, 
+#' listw= usalw, time=2, wide = FALSE, 
+#' filter_options="year==1970 | year==1971",
+#'  method="Chebyshev")
+#' @import spatialreg
 strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, ...){
     formin <- formula
     if(missing(wide) | wide == FALSE){
@@ -50,8 +57,7 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         message("The spatio-temporal regression model fitted:")
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
-        res<- spatialreg::errorsarlm(modframe,
-                                     listw=listw,...)
+        res<- spatialreg::errorsarlm(modframe,listw=listw,...)
     }
     else {
         if (wide==FALSE){
@@ -85,7 +91,6 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         message(deparse(formout))
         modframe <- model.frame(formout, data=outdf)
         res<- spatialreg::errorsarlm(modframe, listw=listw, ...)
-        #res<- spatialreg::errorsarlm(modframe, listw=listw)
     }
     return(res)
 }
