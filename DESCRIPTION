@@ -9,12 +9,12 @@ Description: This package implements a spatio-temporal regression model based on
 Depends:
     R (>= 3.6.1),
     spatialreg (>= 1.1.5),
+    dplyr (>= 0.8.3)
+Imports:
     rlang (>= 0.4.2),
-    dplyr (>= 0.8.3),
     tidyr (>= 1.0.0),
     purrr (>= 0.3.3),
-    magrittr (>= 1.5)
-Imports:
+    magrittr (>= 1.5),
     rgdal (>= 1.4.8),
     spdep (>= 1.1.3),
     lazyeval,
@@ -23,9 +23,13 @@ Imports:
     methods,
     graphics,
     utils,
-    knitr,
+    knitr
+Suggests:
+    sf (>= 0.9-4),
     splm (>= 1.4.11),
-    Ecdat
+    Ecdat,
+    testthat,
+    rmarkdown
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)
@@ -34,4 +38,3 @@ BugReports: https://github.com/mkamenet3/strm/issues
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 RoxygenNote: 7.0.1
-Suggests: testthat, rmarkdown
