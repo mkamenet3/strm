@@ -1,8 +1,13 @@
 ## Test environments
 
 * Windows 10 (development) R 4.0.2
+* Travis-CI used to continuous integration
 
 ## R CMD check results
+
+### Errors:
+
+* 0 Errors
 
 ### Notes:
 
@@ -10,7 +15,7 @@
 
 ### Warnings:
 
-* Dependence on R version '3.6.1' not with patchlevel 0
+* 0 Warnings
 
 ## Downstream dependencies
 
