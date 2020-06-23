@@ -3,3 +3,10 @@
 language: R
 cache: packages
 warnings_are_errors: false
+addons:
+  apt:
+    packages:
+      - gdal-bin
+      - libgdal1-dev
+      - libproj-dev
+      

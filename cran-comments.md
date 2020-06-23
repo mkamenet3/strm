@@ -1,6 +1,6 @@
 ## Test environments
 
-* Windows 10 (development) R 3.6.1
+* Windows 10 (development) R 4.0.2
 
 ## R CMD check results
 
