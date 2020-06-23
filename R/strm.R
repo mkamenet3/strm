@@ -5,7 +5,7 @@
 #' @param formula Model formula specified by user (without lags). Any transformed variables, such as logged-variables, should be specified in the model formula.
 #' @param id Group identifier (example: state).
 #' @param data Name of dataframe.
-#' @param listw Weights list object.
+#' @param listw Spatial weights list object.
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.
 #' @param filter_options Additional arguments to be passed to \code{dplyr::filter()}. Default is \code{NULL}.

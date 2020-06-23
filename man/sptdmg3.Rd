@@ -4,7 +4,9 @@
 \name{sptdmg3}
 \alias{sptdmg3}
 \title{sptdmg3 SpatialPolygonsDataFrame: Wisconsin Minor Civil Divisions}
-\format{An object of class \code{SpatialPolygonsDataFrame} with 1837 rows and 43 columns.}
+\format{
+An object of class \code{SpatialPolygonsDataFrame} with 1837 rows and 43 columns.
+}
 \usage{
 data(sptdmg3)
 }
