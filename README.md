@@ -27,6 +27,4 @@ library("devtools")
 devtools::install_github("mkamenet3/strm")
 
 ```
-  <!-- badges: start -->
-  [![Travis build status](https://travis-ci.com/mkamenet3/spatemperr.svg?branch=master)](https://travis-ci.com/mkamenet3/spatemperr)
-  <!-- badges: end -->
+[![Build Status](https://travis-ci.com/mkamenet3/strm.svg?token=aPo4kopCe3udvbX77YvH&branch=master)](https://travis-ci.com/mkamenet3/strm)
