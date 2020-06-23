@@ -10,13 +10,13 @@ This package is still under development. Please report bugs or constructive tips
 
 ## Installation
 
-`strm` was built on R version 3.6.1 ("Action of the Toes").
+`strm` was built on R version 4.0.2 ("Taking Off Again").
 
 Package dependencies include:
 
-- dplyr (>= 0.8.3)
+- dplyr (>= 1.0.0)
 - tidyr (>= 1.0.0)
-- purrr (>= 0.3.3)
+- purrr (>= 0.3.4)
 - spatialreg (>= 1.1.5)
 
 
