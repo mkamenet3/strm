@@ -1,11 +1,11 @@
 Package: strm
-Title: Spatio-temporal Regression Model
+Title: Spatio-Temporal Regression Modeling
 Version: 0.1.1
 Authors@R: c(
         person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre")),
         person("Guangqing", "Chi", ,"guangqingchi@gmail.com", role = "aut"),
         person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = "aut"))
-Description: This package implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
+Description: Implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 Depends:
     R (>= 4.0),
     spatialreg (>= 1.1-5),
@@ -23,13 +23,13 @@ Imports:
     methods,
     graphics,
     utils,
-    knitr
+    knitr,
+    testthat (>= 2.3.2),
+    rmarkdown (>= 2.3)
 Suggests:
     sf (>= 0.9-4),
     splm (>= 1.4.11),
-    Ecdat,
-    testthat,
-    rmarkdown
+    Ecdat
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)

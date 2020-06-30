@@ -22,12 +22,15 @@
 #' out1 <- strm(formula, id="state", data=Produc, 
 #' listw = usalw, time=2,wide=FALSE,
 #' filter_options="year==1970 | year==1971")
-#' 
 #' out2 <- strm(formula, id="state", data=Produc, 
 #' listw= usalw, time=2, wide = FALSE, 
 #' filter_options="year==1970 | year==1971",
 #'  method="Chebyshev")
 #' @import spatialreg
+#' @importFrom stats as.formula 
+#' @importFrom stats complete.cases 
+#' @importFrom stats model.frame 
+#' @importFrom stats terms
 strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, ...){
     formin <- formula
     if(missing(wide) | wide == FALSE){

@@ -8,10 +8,15 @@
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. Default is \code{FALSE}.
 #' @param filter_options Additional arguments to be passed to \code{dplyr::filter()}.
-#' @import rlang 
 #' @import dplyr 
 #' @import tidyr 
-#' @import purrr 
+#' @importFrom purrr map
+#' @importFrom purrr imap_dfc
+#' @importFrom purrr set_names
+#' @importFrom magrittr "%>%"
+#' @importFrom rlang .data
+#' @importFrom rlang as_name
+#' @importFrom rlang enquo
 createlagvars <- function(data, vars, id, time=time, wide, filter_options){
     keepvars <- c(vars, rlang::as_name(id))
     id <- rlang::enquo(id)
@@ -34,7 +39,7 @@ createlagvars <- function(data, vars, id, time=time, wide, filter_options){
                                                                                      paste0(.y,".",'Tlag',timeseq)))
                                           })) %>%
                                           tidyr::unnest(cols=c(data,lags)) %>%
-                                          dplyr::filter(complete.cases(.)))
+                                          dplyr::filter(complete.cases(.data)))
             return(outdf)
         } else {
             return(outdf)

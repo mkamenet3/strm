@@ -7,12 +7,10 @@
 #'      \item `POLD00`: percentage of the old population (age sixty-five and older) in 2000.
 #'      \item `POLD90`: percentage of the old population (age sixty-five and older) in 1990.
 #' }
-#' 
 #' @docType data
 #' @usage data(sptdmg3)
 #' @keywords datasets
 #' @references Chi, Guangqing, and Jun Zhu. *Spatial Regression Models for the Social Sciences.* SAGE, 2019.
-#' 
 #' @examples 
 #' data(sptdmg3)
 #' class(sptdmg3)
