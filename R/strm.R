@@ -28,7 +28,6 @@
 #'  method="Chebyshev")
 #' @import spatialreg
 #' @importFrom stats as.formula 
-#' @importFrom stats complete.cases 
 #' @importFrom stats model.frame 
 #' @importFrom stats terms
 strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, ...){
