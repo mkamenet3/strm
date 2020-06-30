@@ -14,7 +14,6 @@
 #' @importFrom purrr imap_dfc
 #' @importFrom purrr set_names
 #' @importFrom magrittr "%>%"
-#' @importFrom rlang .data
 #' @importFrom rlang as_name
 #' @importFrom rlang enquo
 createlagvars <- function(data, vars, id, time=time, wide, filter_options){
@@ -32,14 +31,14 @@ createlagvars <- function(data, vars, id, time=time, wide, filter_options){
     if (wide == FALSE){
         if(time>1){
             lags <- NULL
-            outdf <- suppressWarnings(outdf%>%
+            outdf <- suppressWarnings(outdf %>%
                                           tidyr::nest(-!!id) %>%
                                           dplyr::mutate(lags = purrr::map(data, function(dat){
                                               purrr::imap_dfc(dat, ~purrr::set_names(purrr::map(timeseq, lag, x= .x),
                                                                                      paste0(.y,".",'Tlag',timeseq)))
                                           })) %>%
                                           tidyr::unnest(cols=c(data,lags)) %>%
-                                          dplyr::filter(complete.cases(.data)))
+                                          tidyr::drop_na())
             return(outdf)
         } else {
             return(outdf)
