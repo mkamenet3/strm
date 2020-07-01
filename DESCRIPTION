@@ -7,7 +7,7 @@ Authors@R: c(
         person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = "aut"))
 Description: Implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 Depends:
-    R (>= 3.6.1),
+    R (>= 3.6),
     spatialreg (>= 1.1-5),
     dplyr (>= 1.0.0)
 Imports:
@@ -38,3 +38,4 @@ BugReports: https://github.com/mkamenet3/strm/issues
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 RoxygenNote: 7.1.0
+SystemRequirements: C++11, GDAL (>= 2.0.1), GEOS (>= 3.4.0), PROJ (>= 4.8.0)
