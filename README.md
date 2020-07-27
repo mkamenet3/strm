@@ -14,10 +14,33 @@ This package is still under development. Please report bugs or constructive tips
 
 Package dependencies include:
 
-- dplyr (>= 1.0.0)
-- tidyr (>= 1.0.0)
-- purrr (>= 0.3.4)
-- spatialreg (>= 1.1.5)
+    - R (>= 3.6),
+    - spatialreg (>= 1.1-5),
+    - dplyr (>= 1.0.0)
+
+Package imports include:
+
+    - rlang (>= 0.4.6),
+    - tidyr (>= 1.0.0),
+    - purrr (>= 0.3.4),
+    - magrittr (>= 1.5),
+    - rgdal (>= 1.5.10),
+    - spdep (>= 1.1.3),
+    - lazyeval,
+    - stats,
+    - grDevices,
+    - methods,
+    - graphics,
+    - utils,
+    - knitr,
+    - testthat (>= 2.3.2),
+    - rmarkdown (>= 2.3)
+    
+Package suggests include:
+
+    - sf (>= 0.9-4),
+    - splm (>= 1.4.11),
+    - Ecdat
 
 
 To download the latest version of `strm`:
