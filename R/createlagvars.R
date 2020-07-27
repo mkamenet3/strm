@@ -8,8 +8,12 @@
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. Default is \code{FALSE}.
 #' @param filter_options Additional arguments to be passed to \code{dplyr::filter()}.
-#' @import dplyr 
-#' @import tidyr 
+#' @importFrom dplyr select 
+#' @importFrom dplyr filter 
+#' @importFrom dplyr mutate
+#' @importFrom tidyr nest 
+#' @importFrom tidyr unnest 
+#' @importFrom tidyr drop_na
 #' @importFrom purrr map
 #' @importFrom purrr imap_dfc
 #' @importFrom purrr set_names

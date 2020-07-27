@@ -56,3 +56,4 @@ listw= usalw, time=2, wide = FALSE,
 filter_options="year==1970 | year==1971",
  method="Chebyshev")
 }
+\keyword{internal}

@@ -26,7 +26,7 @@
 #' listw= usalw, time=2, wide = FALSE, 
 #' filter_options="year==1970 | year==1971",
 #'  method="Chebyshev")
-#' @import spatialreg
+#' @importFrom spatialreg errorsarlm
 #' @importFrom stats as.formula 
 #' @importFrom stats model.frame 
 #' @importFrom stats terms

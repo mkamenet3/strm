@@ -6,11 +6,9 @@
 #' @import graphics
 #' @import grDevices
 #' @import knitr
-#' @import lazyeval
 #' @import methods
 #' @import rgdal
 #' @import rmarkdown
-#' @import spdep
 #' @import testthat
 #' @import utils
 NULL
