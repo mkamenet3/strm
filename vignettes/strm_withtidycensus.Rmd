@@ -1,0 +1,491 @@
+---
+title: "Using strm with tidycensus"
+output: rmarkdown::html_vignette
+header-includes:
+   - \usepackage{float}
+vignette: >
+  %\VignetteIndexEntry{strm and tidycensus}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 8, message = TRUE, warning = FALSE)
+library(rmarkdown)
+library(knitr)
+#load strm
+library(strm)
+#load tidycensus
+library(tidycensus)
+options(tigris_use_cache = TRUE)
+#load package dependencies for the vignette
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(broom)
+library(patchwork)
+library(purrr)
+library(rgdal)
+library(spdep)
+
+```
+
+
+`strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
+
+This package builds on the `errorsarlm()` function from the `spatialreg` package.
+
+This package is still under development. Please report bugs or constructive tips to issues [here](https://github.com/mkamenet3/strm/issues).
+
+#Introduction
+
+
+This data example will work through downloading census data using the `tidycensus` package, creating spatial weights, and then using `strm` to fit the spatio-temporal regression model. We will fit the same model using both the *long* and *wide* data formats.
+
+##Downloading Census Data Using `tidycensus`
+
+From the `tidycensus` package, we use the `census_api_key()` function and specify `install=TRUE` so that the API key is stored in the local R environment. To access the variables we want from the American Community Survey. It should be noted that using tidycensus, we can also access the 1990, 2000, and 2010 decennial US Census data as well.
+
+```{r, echo=FALSE, eval=FALSE, results=FALSE}
+census_api_key("1142ff2af9614e5b2a4bccdab5a432f8adc910ea", install=TRUE, overwrite = TRUE)
+readRenviron("~/.Renviron")
+```
+
+```{r,eval=FALSE}
+census_api_key("YOUR API KEY HERE", install=TRUE)
+```
+
+(You may need to either restart your R session or run `readRenviron("~/.Renviron")` in your console to use the API key immediately.)
+
+```{r, eval=FALSE}
+vars <- load_variables(2018, "acs5", cache=TRUE)
+```
+
+
+```{r}
+head(vars)
+```
+
+
+In this example, we want to look at percent poverty as it relates to female employment rates at the Wisconsin county-level. We will use the American Community Survey (ACS) 5-year data. The variables we will extract are:
+
+
+- `B17020_002` - Estimate: Total - Income in the past 12 months below poverty level
+- `B17020_001` - Estimate: Total - Poverty Status in the past 12 months.
+- `B23022_026` - Estimate: Total Female by Work Status by weeks worked in the past 12 months for the population 16-64 years old.
+- `B23022_001` - Estimate: Total: status in the past 12 months by usual hours worked per week in the past 12 months by weeks worked in the past 12 months for the population 16-64 years old (Male and Female)
+
+
+We will get 5-year estimates from 2010-2014, 2011-2015, 2012-2016, 2013-2017, 2014-2018 using the `get_acs()` function from the `tidycensus` package/
+
+```{r, results=FALSE}
+years <- lst(2014,2015,2016,2017,2018)
+
+
+multi_year <- map(years,~ get_acs(geography = "county",
+                                  variables = c("B17020_001","B17020_002","B23022_026","B23022_001"),
+                                  state = "WI",
+                                  year = .x,
+                                  geometry = TRUE)) %>%
+              map2(years, ~ mutate(.x, id = .y))
+
+wi_raw <- reduce(multi_year, rbind)
+
+```
+
+We first explore the raw data:
+
+```{r}
+class(wi_raw)
+str(wi_raw)
+head(wi_raw)
+```
+
+Notice that `wi_raw` is of class `sf` and class `data.frame`
+
+## Long-Form Data
+###Exploratory (Spatial) Data Analysis
+
+We first clean the data in order to calculate percent of each year-county population that is in poverty and percent female employment rate. We also take the natural log transformation of the poverty percent rate. We first use `select()` from `dplyr` to select out the `moe` (margin of error) variable as we do  not need it for this analysis. We then use `spread` from `tidyr` to reformat the key variables from long to wide format so that we can then use `mutate()` from `dplyr` to create new variables (`pov_prct`, `feemp_prct`, `id`, `logpov`). Note this dataset is still in `long` format because there are multiple observations for each county due to multiple years.
+
+```{r}
+wi <- wi_raw %>%
+    dplyr::select(-moe) %>%
+    spread(key = variable, value=estimate) %>%
+    mutate(pov_prct = B17020_002/B17020_001,
+           feemp_prct = B23022_026/B23022_001,
+           year=id,
+           logpov = log(pov_prct)) 
+class(wi)
+str(wi)
+```
+
+Let us explore the summary statistics by year for `pov_prct` using `summary()` and the `tapply()` function:
+
+```{r}
+summary(wi$pov_prct)
+tapply(wi$pov_prct, wi$year, summary)
+```
+
+We also the summary statistics by year for `feemp_prct`
+
+```{r}
+summary(wi$feemp_prct)
+tapply(wi$feemp_prct, wi$year, summary)
+```
+
+Finally, we look at correlation between percent poverty and percent female employment across all 5 years of ACS data:
+
+```{r}
+cor(wi$pov_prct,wi$feemp_prct)
+```
+
+We next visually explore the data using the `geom_histogram()` and `geom_density()` geometries from the `ggplot2` package.
+
+We first explore percent poverty (`pov_prct`) and the log-transformed percent poverty (`logpov`):
+ 
+```{r}
+ggplot(data=wi, aes(x=pov_prct)) +
+    facet_grid(.~ year) +
+    geom_histogram(binwidth=0.01,color="black", aes(fill=factor(year))) +
+    geom_density(alpha=.2, aes(fill=factor(year))) +
+    theme_minimal() +
+    xlab("Percent Poverty") +
+    labs(title="County-Level Percent Poverty in Wisconsin Across Time", fill="Year") +
+    theme(plot.title = element_text(hjust = 0.5),
+          legend.position = "none") +
+    scale_fill_manual(values=c("chartreuse4", "deeppink4", "cornflowerblue","orange2","tomato3"))
+
+breaks <- quantile(wi$logpov,seq(0,1,by=0.1))
+ggplot(data=wi, aes(x=logpov)) +
+    geom_histogram(aes(y =..density.., fill=factor(year)),color="black", breaks=breaks) +
+    facet_grid(.~ year) +
+    geom_density(alpha=.2, aes(fill=factor(year))) +
+    theme_minimal() +
+    xlab("(Log) Percent Poverty") +
+    labs(title="County-Level (Log) Percent Poverty in Wisconsin Across Time", fill="Year") +
+    theme(plot.title = element_text(hjust = 0.5),
+          legend.position = "none") +
+    scale_fill_manual(values=c("chartreuse4", "deeppink4", "cornflowerblue","orange2","tomato3"))
+    
+```
+
+Recall that `wi` is of class `sf`. We can use the `geom_sf()` geometry to easily create maps of both `pov_prct` and `logpov`:
+
+```{r}
+ggplot(wi) +
+    geom_sf(aes(fill = pov_prct)) +
+    scale_fill_viridis_c() +
+    coord_sf(datum = NA) +
+    facet_grid(. ~ year) +
+    theme_minimal()+
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "County-Level Percent Poverty in Wisconsin Across Time", fill="%Poverty")
+
+
+ggplot(wi) +
+    geom_sf(aes(fill = logpov)) +
+    scale_fill_viridis_c() +
+    coord_sf(datum = NA) +
+    facet_grid(. ~ year) +
+    theme_minimal()+
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "County-Level (Log) Percent Poverty in Wisconsin Across Time", fill="(Log) %Poverty")
+```
+
+Next we visually explore `feemp_prct`:
+
+```{r}
+ggplot(data=wi, aes(x=feemp_prct)) +
+    facet_grid(.~ year) +
+    geom_histogram(binwidth=0.01,color="black", aes(fill=factor(year))) +
+    geom_density(alpha=.2, aes(fill=factor(year))) +
+    theme_minimal() +
+    xlab("Percent Female Employment") +
+    labs(title="County-Level Percent Female Employment in Wisconsin Across Time", fill="Year") +
+    theme(plot.title = element_text(hjust = 0.5),
+          legend.position = "none") +
+    scale_fill_manual(values=c("chartreuse4", "deeppink4", "cornflowerblue","orange2","tomato3"))
+
+
+```
+
+```{r}
+ggplot(wi) +
+    geom_sf(aes(fill = feemp_prct)) +
+    scale_fill_viridis_c() +
+    coord_sf(datum = NA) +
+    facet_grid(. ~ year) +
+    theme_minimal()+
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "County-Level Percent Female Employment in Wisconsin Across Time", fill="%Feemp")
+
+
+```
+
+
+###Create Neighbors
+
+In order to apply the spatio-temporal model using `strm`, we need to first define county neighbors. We will define first-order contiguity-based neighborhood structure (Queen's adjacency) with row-standardized spatial weights. 
+
+We have 5 years of data, however the spatial dependence between counties remains the same. Therefore, we will select unique counties to create neighbors and spatial weights. Specifically, we will use the geometries from 2018 using `filter()` from `dplyr` and to simplify the data frame we will select just the `GEOID` and `NAME` variables using `select()` from `dplyr`:
+
+
+```{r}
+
+wi_uniq <- wi %>%
+    dplyr::filter(year==2018) %>%
+    dplyr::select(GEOID, NAME)  
+nrow(wi_uniq)
+class(wi_uniq)
+```
+
+We now have 72 unique county geometries which correspond to the 72 counties in Wisconsin.
+
+
+We next create the neighborhood structure using `poly2nb()` from the `spdep` package. We set the row names of `wi_uniq` dataframe to correspond to the county names and then use the argument `row.names=row.names(wi_uniq)` in `poly2nb()` so that we can easily identify each element of the neighborhood structure list with a county. Finally, we print the first 6 neighbors using `str(head(wi_nb))`:
+
+```{r}
+row.names(wi_uniq) <- wi_uniq$NAME
+head(row.names(wi_uniq))
+wi_nb <- poly2nb(wi_uniq, row.names=row.names(wi_uniq))
+str(head(wi_nb))
+
+```
+
+Now that we have the neighborhood structure, we create the list of spatial weights using `nb2listw()` from the `spdep` package and print the class and first 6 elements of the spatial weights list:
+
+```{r}
+listw_w <- nb2listw(wi_nb, style = "W")
+class(listw_w)
+str(head(listw_w$weights))
+```
+
+Lastly, we can visualize these neighbors. We first extract the county polygons using `st_geometry()` from the `sf` package and save that as the object `county_geoms`. Next we find the county centroids using `st_centroid()` from `sf` on `county_geoms` and save that as the object `cntrd`. Lastly, we find the coordinates of the centroids using `st_coordinates()` on the `cntrd` object:
+
+```{r, message=FALSE, warning=FALSE}
+county_geoms <- st_geometry(wi_uniq)
+cntrd <- st_centroid(county_geoms)
+coords <- st_coordinates(cntrd)
+head(coords)
+```
+
+We can visualize the county geometries, centroids, and neighborhood:
+
+```{r}
+plot(county_geoms)
+plot(listw_w, coords, col="blue", add=TRUE)
+```
+
+
+###Using `strm`
+
+We use the `strm()` function from the `strm` package. The first argument is the model formula. Given that the data is in *long* format, `strm` will create the lagged values for you as well as the lagged response in the right-hand side of the model. The next argument is `id`, which we set to "NAME" as each observation is taken at the county-level. We then specify the name of the data set (`data=wi`). We set the argument `listw=listw_w` to the row-standardized list of spatial weights. We set `time=5` because there are 5 time periods in the dataset. We set  `wide=FALSE`, thereby specifying that the data is in *long* format. Lastly, we set the argument `returndf=TRUE` to return the modified dataframe along with the model output. The default to `returndf` is `FALSE` and `strm` will only return the model output summary.
+
+```{r}
+#create model formula
+formula <-as.formula(logpov  ~ feemp_prct)
+#use strm
+out <- strm(formula, id="NAME", data=wi, listw = listw_w, time=5,wide=FALSE, returndf = TRUE)
+#explore model summary output
+summary(out$res)
+#explore modified dataframe used in strm computation
+summary(out$modframe)
+```
+
+We next explore the model diagnostics. We create a new dataframe called `out_df` using `cbind.data.frame()`, which has the model residuals, model standardized residuals, and fitted values.
+
+```{r, warning=FALSE, message=FALSE}
+out_df <- cbind.data.frame(resids = out$res$residuals,
+                           stdresids = out$res$residuals/sd(out$res$residuals),
+                           fit = out$res$fitted.values)
+```
+
+Using the model residuals and fitted values, we create a QQ plot and (standardized) residuals vs. fitted plot, and show them both using the `+` operator from the `patchwork` R package:
+
+```{r}
+
+#QQ Plot
+p1 <- ggplot(out_df, aes(sample = stdresids)) +
+    geom_qq(size = 1) +
+    stat_qq_line() +
+    theme_minimal() +
+    xlab("Theoretical Quantiles") +
+    ylab("Standardized Residuals") +
+    ggtitle("QQ Plot") + 
+    theme(plot.title=element_text(hjust = 0.5))
+
+#Residuals vs. Fitted Plot
+p2 <- ggplot(out_df, aes(x=fit, y=stdresids)) +
+    geom_point(size = 0.5) +
+    geom_smooth(se=FALSE) +
+    theme_minimal() +
+    xlab("Fitted Values") +
+    ylab("Standardized Residuals") +
+    ggtitle("Residuals vs. Fitted Plot") + 
+    theme(plot.title=element_text(hjust = 0.5))
+
+p1 + p2
+
+```
+
+## Wide-Form Data
+
+Next, we will perform the **same** analysis as above, but will use the data in *wide* format.
+
+We first clean the dataframe and convert it to wide format using functions from both the `dplyr` and `tidyr` packages
+
+
+```{r}
+wi_w <- as.data.frame(wi_raw) %>%
+    dplyr::select(-moe) %>%
+    spread(key = variable, value=estimate) %>%
+    mutate(pov_prct = B17020_002/B17020_001,
+           feemp_prct = B23022_026/B23022_001,
+           year=id,
+           logpov = log(pov_prct),
+           logfeemp = log(pov_prct)) %>%
+    dplyr::select(-id, -(B17020_001:B23022_026), - geometry) %>%
+    relocate(year, .after=GEOID) %>%
+    gather(variable, value, -(GEOID:NAME)) %>%
+    unite(temp, variable, year) %>%
+    spread(temp, value)
+
+str(wi_w)
+head(wi_w)
+nrow(wi_w)
+    
+```
+
+Notice how in this wide format, each variable is one of our poverty percent or female employment percent variables plus an associated year, and now we only have `r nrow(wi_w)` rows in this wide format compared to `r nrow(wi)` (72 counties $\times$ 5 time periods) rows.
+
+
+###Exploratory (Spatial) Data Analysis
+
+We will use the 2018 geometries for creating our neighborhood structure and list of spatial weights. To do this, we first create `wi_2018geom`, which is a simplified `sf` dataframe that only contains the `GEOID` variable and the associated county geometries.
+
+```{r}
+wi_2018geom <- wi %>%
+    filter(year==2018) %>%
+    dplyr::select(GEOID, geometry)
+str(wi_2018geom)
+
+```
+
+Next, we will merge `wi_2018geom` (an `sf` dataframe that contains the county geometries) with `wi_w` (a regular dataframe) using the `merge()` function from the `sp` package:
+
+```{r}
+#merge 2018 geometries back in
+wi_w.sf <- merge(wi_2018geom, wi_w, by="GEOID")
+    
+nrow(wi_w.sf)
+class(wi_w.sf)
+```
+
+Since our data is in *wide* format, we can create a similar map to the one created above in the *long* format, by creating 5 separate maps for each time period and then putting them together using the `+` operator from the `patchwork` R package. To create a title for the combined plot, we use `plot_annotation()` and to specify a single legend we use `plot_layout(guides = 'collect')`, both from the `patchwork` package.
+
+
+```{r}
+p18 <- ggplot(wi_w.sf) +
+    geom_sf(aes(fill = logpov_2018)) +
+    scale_fill_viridis_c(limits = c(-3.2, -1)) +
+    coord_sf(datum = NA) +
+    theme_minimal() +
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "2018", fill="(Log) %Poverty")
+
+p17 <- ggplot(wi_w.sf) +
+    geom_sf(aes(fill = logpov_2017)) +
+    scale_fill_viridis_c(limits = c(-3.2, -1)) +
+    coord_sf(datum = NA) +
+    theme_minimal() +
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "2017", fill="(Log) %Poverty")
+
+p16 <- ggplot(wi_w.sf) +
+    geom_sf(aes(fill = logpov_2016)) +
+    scale_fill_viridis_c(limits = c(-3.2, -1)) +
+    coord_sf(datum = NA) +
+    theme_minimal()+
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "2016", fill="(Log) %Poverty")
+
+p15 <- ggplot(wi_w.sf) +
+    geom_sf(aes(fill = logpov_2015)) +
+    scale_fill_viridis_c(limits = c(-3.2, -1)) +
+    coord_sf(datum = NA) +
+    theme_minimal()+
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "2015", fill="(Log) %Poverty")
+
+p14 <- ggplot(wi_w.sf) +
+    geom_sf(aes(fill = logpov_2014)) +
+    scale_fill_viridis_c(limits = c(-3.2, -1)) +
+    coord_sf(datum = NA) +
+    theme_minimal()+
+    theme(plot.title=element_text(hjust = 0.5)) +
+    labs(title = "2014", fill="(Log) %Poverty")
+
+#patchwork the plots together
+patch1 <- p14 + p15 + p16 + p17 + p18
+patch1 + 
+    plot_annotation(title="County-Level (Log) Percent Poverty in Wisconsin Across Time") +
+    plot_layout(guides = "collect")
+
+```
+
+###Create Neighbors
+
+Creating the neighborhood structure and list of spatial weights is the same as above in *long* format.
+
+```{r}
+row.names(wi_w.sf) <- wi_w.sf$NAME
+head(row.names(wi_w.sf))
+wi_nb_w <- poly2nb(wi_w.sf, row.names=row.names(wi_w.sf))
+str(head(wi_nb_w))
+
+```
+
+```{r}
+listw_w <- nb2listw(wi_nb_w, style = "W")
+class(listw_w)
+str(head(listw_w$weights))
+```
+
+```{r, message=FALSE, warning=FALSE}
+county_geoms <- st_geometry(wi_w.sf)
+cntrd <- st_centroid(county_geoms)
+coords <- st_coordinates(cntrd)
+head(coords)
+```
+
+To be sure that our neighbors look the same, we can again plot the county geometries, centroids, and neighborhood:
+
+```{r}
+plot(county_geoms)
+plot(listw_w, coords, col="blue", add=TRUE)
+
+```
+
+###Using `strm`
+
+The first argument is the model formula. Given that the data is now in *wide* format, we must manually enter the response and all of the explanatory variables and their lagged terms. The next argument is `id`, which we set to "NAME" as each observation is taken at the county-level. We then specify the name of the data set (`data=wi_w.sf`). We set the argument `listw=listw_w` to the row-standardized list of spatial weights. We set `time=5` because there are 5 time periods in the dataset. We set  `wide=TRUE`, thereby specifying that the data is in *wide* format. 
+
+```{r}
+
+formula2 <-as.formula(logpov_2018  ~ feemp_prct_2014 +feemp_prct_2015 + feemp_prct_2016 + 
+                          feemp_prct_2017 + feemp_prct_2018 +  
+                        logpov_2014 + logpov_2015 + logpov_2016 + logpov_2017)
+out2 <- strm(formula2, id="NAME", data=wi_w.sf, listw= listw_w, time=5, wide=TRUE)
+summary(out2)
+
+```
+
+Compare the output from `out$res` from the *long* format dataframe and `out2` from the *wide* format dataframe and see that they are the same!
+
+```{r}
+knitr::kable(tidy(out$res), digits=3, caption="Long Format Model")
+knitr::kable(tidy(out2), digits= 3,caption="Wide Format Model")
+```
+
+

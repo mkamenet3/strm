@@ -38,9 +38,14 @@ Package imports include:
     
 Package suggests include:
 
-    - sf (>= 0.9-4),
     - splm (>= 1.4.11),
-    - Ecdat
+    - spdep (>= 1.1-3),
+    - sf (>= 0.9-4),
+    - Ecdat (>= 0.3-7),
+    - tidycensus (>= 0.9.9),
+    - ggplot2 (3.3.2),
+    - patchwork (>= 1.0.1),
+    - broom (>= 0.7.0)
 
 
 To download the latest version of `strm`:
