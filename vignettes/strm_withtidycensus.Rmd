@@ -4,7 +4,7 @@ output: rmarkdown::html_vignette
 header-includes:
    - \usepackage{float}
 vignette: >
-  %\VignetteIndexEntry{Intro to strm}
+  %\VignetteIndexEntry{strm and tidycensus}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
