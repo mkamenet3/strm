@@ -30,7 +30,8 @@ Suggests:
     sf (>= 0.9-4),
     Ecdat (>= 0.3-7),
     tidycensus (>= 0.9.9),
-    patchwork (>= 1.0.1)
+    patchwork (>= 1.0.1),
+    broom (>= 0.7.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)
