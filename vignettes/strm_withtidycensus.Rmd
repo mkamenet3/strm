@@ -73,7 +73,7 @@ In this example, we want to look at percent poverty as it relates to female empl
 - `B17020_002` - Estimate: Total - Income in the past 12 months below poverty level
 - `B17020_001` - Estimate: Total - Poverty Status in the past 12 months.
 - `B23022_026` - Estimate: Total Female by Work Status by weeks worked in the past 12 months for the population 16-64 years old.
-- `B23022_001` - Estimate: Total: tatus in the past 12 months by usual hours worked per week in the past 12 months by weeks worked in the past 12 months for the population 16-64 years old (Male and Female)
+- `B23022_001` - Estimate: Total: status in the past 12 months by usual hours worked per week in the past 12 months by weeks worked in the past 12 months for the population 16-64 years old (Male and Female)
 
 
 We will get 5-year estimates from 2010-2014, 2011-2015, 2012-2016, 2013-2017, 2014-2018 using the `get_acs()` function from the `tidycensus` package/
@@ -226,7 +226,7 @@ ggplot(wi) +
 
 ###Create Neighbors
 
-In order to apply the spatio-temporal model using `strm`, we need to first define county neighbors. We will define first-order contiguity-based neigborhood structure (Queen's adjacency) with row-standardized spatial weights. 
+In order to apply the spatio-temporal model using `strm`, we need to first define county neighbors. We will define first-order contiguity-based neighborhood structure (Queen's adjacency) with row-standardized spatial weights. 
 
 We have 5 years of data, however the spatial dependence between counties remains the same. Therefore, we will select unique counties to create neighbors and spatial weights. Specifically, we will use the geometries from 2018 using `filter()` from `dplyr` and to simplify the data frame we will select just the `GEOID` and `NAME` variables using `select()` from `dplyr`:
 
@@ -253,7 +253,7 @@ str(head(wi_nb))
 
 ```
 
-Now that we have the neighborhood strucutre, we create the list of spatial weights using `nb2listw()` from the `spdep` package and print the class and first 6 elements of the spatial weights list:
+Now that we have the neighborhood structure, we create the list of spatial weights using `nb2listw()` from the `spdep` package and print the class and first 6 elements of the spatial weights list:
 
 ```{r}
 listw_w <- nb2listw(wi_nb, style = "W")
@@ -372,7 +372,7 @@ str(wi_2018geom)
 
 ```
 
-Next, we will merge `wi_2018geom` (an `sf` dataframe that countains the county geometries) with `wi_w` (a regular dataframe) using the `merge()` function from the `sp` package:
+Next, we will merge `wi_2018geom` (an `sf` dataframe that contains the county geometries) with `wi_w` (a regular dataframe) using the `merge()` function from the `sp` package:
 
 ```{r}
 #merge 2018 geometries back in
