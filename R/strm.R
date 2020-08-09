@@ -30,13 +30,18 @@
 #' @importFrom stats as.formula 
 #' @importFrom stats model.frame 
 #' @importFrom stats terms
-strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, ...){
+strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, returndf=FALSE,...){
     formin <- formula
     if(missing(wide) | wide == FALSE){
         wide <- FALSE
     } else {
         warning("Data is in wide format. strm assumes you include the temporally-lagged explanatory variables manually.")
         wide <- wide
+    }
+    if (returndf==TRUE){
+        returndf <- TRUE
+    } else {
+        returndf <- FALSE
     }
     y <- deparse(formula(formin)[[2]])
     xs <- attributes(terms(formin))$term.labels
@@ -94,5 +99,10 @@ strm <- function(formula, id,data, listw,time=2,wide=FALSE,filter_options=NULL, 
         modframe <- model.frame(formout, data=outdf)
         res<- spatialreg::errorsarlm(modframe, listw=listw, ...)
     }
-    return(res)
+    if(returndf == TRUE){
+        return(list(res=res,
+                    modframe = modframe))
+    } else {
+        return(res)
+    }
 }
