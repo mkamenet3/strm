@@ -9,6 +9,7 @@
 #' @param time Number of time periods in the dataset. Lags will be taken for each time period. Default is 2 time periods. For a spatial-only regression model, set \code{time=1}. 
 #' @param wide Boolean indicator. Takes \code{TRUE} if data is in wide format and \code{FALSE} if data is in long format. If data is in wide format, it is assumed that the user is including the temporal lags for the explanatory variables and response variable manually. Default is \code{FALSE}.
 #' @param filter_options Additional arguments to be passed to \code{dplyr::filter()}. Default is \code{NULL}.
+#' @param returndf Logical. If modified dataframe should be returned. Default is \code{FALSE}.
 #' @param ... Additional arguments to be passed to \code{spatialreg::errorsarlm()}.
 #' @details Any transformed variables should be included in the formula statement. For example, to request \code{gdp} natural log-transformed, you would build the model formula as \code{log(gdp)}.
 #' @export
