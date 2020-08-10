@@ -33,7 +33,7 @@ Suggests:
     ggplot2 (>= 3.3.2),
     patchwork (>= 1.0.1),
     broom (>= 0.7.0)
-LinkingTo:	cpp11    
+LinkingTo:	cpp11   
 NeedsCompilation:	yes
 VignetteBuilder: knitr
 Encoding: UTF-8
