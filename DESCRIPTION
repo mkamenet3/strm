@@ -11,8 +11,8 @@ Depends:
     spatialreg (>= 1.1-5)
 Imports:
     rlang (>= 0.4.6),
-    dplyr (= 1.0.0),
-    tidyr (= 1.0.0),
+    dplyr (== 1.0.0),
+    tidyr (== 1.0.0),
     purrr (>= 0.3.4),
     magrittr (>= 1.5),
     rgdal (>= 1.5.10),
