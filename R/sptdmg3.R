@@ -11,7 +11,6 @@
 #' @usage data(sptdmg3)
 #' @keywords datasets
 #' @references Chi, Guangqing, and Jun Zhu. *Spatial Regression Models for the Social Sciences.* SAGE, 2019.
-#' @export
 #' @examples 
 #' data(sptdmg3)
 #' class(sptdmg3)
