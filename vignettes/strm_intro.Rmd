@@ -141,7 +141,7 @@ We use the example from *Spatial Regression Models for the Social Sciences* Chi 
 - `POLD00`: percentage of the old population (age sixty-five and older) in 2000.
 - `POLD90`: percentage of the old population (age sixty-five and older) in 1990.
 
-We load the shapefile in using the `readOGR()` from the `rgdal` package. 
+We load the `sptdmg3` .RData file that comes with the `strm` package using `data(sptdmg3)` and explore its `class()` and `names()`: 
 
 ```{r}
 data(sptdmg3)

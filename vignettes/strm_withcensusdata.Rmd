@@ -16,9 +16,6 @@ library(rmarkdown)
 library(knitr)
 #load strm
 library(strm)
-#load tidycensus
-library(tidycensus)
-options(tigris_use_cache = TRUE)
 #load package dependencies for the vignette
 library(tidyr)
 library(dplyr)
@@ -29,16 +26,6 @@ library(purrr)
 library(rgdal)
 library(spdep)
 
-```
-
-```{r, echo=FALSE}
-my_secret <- function() {
-  val <- Sys.getenv("CENSUS_API_KEY")
-  if (identical(val, "")) {
-    stop("`CENSUS_API_KEY` env var has not been set")
-  }
-  val
-}
 ```
 
 
@@ -54,29 +41,6 @@ This package is still under development. Please report bugs or constructive tips
 
 This data example will work through downloading census data using the `tidycensus` package, creating spatial weights, and then using `strm` to fit the spatio-temporal regression model. We will fit the same model using both the *long* and *wide* data formats.
 
-##Downloading Census Data Using `tidycensus`
-
-From the `tidycensus` package, we use the `census_api_key()` function and specify `install=TRUE` so that the API key is stored in the local R environment. To access the variables we want from the American Community Survey. It should be noted that using tidycensus, we can also access the 1990, 2000, and 2010 decennial US Census data as well.
-
-```{r, echo=FALSE, eval = NOT_CRAN, results=FALSE}
-census_api_key(Sys.getenv("CENSUS_API_KEY"), install=TRUE, overwrite = TRUE)
-readRenviron("~/.Renviron")
-```
-
-```{r,eval=FALSE}
-census_api_key("YOUR API KEY HERE", install=TRUE)
-```
-
-(You may need to either restart your R session or run `readRenviron("~/.Renviron")` in your console to use the API key immediately.)
-
-```{r, eval=FALSE}
-vars <- load_variables(2018, "acs5", cache=TRUE)
-```
-
-
-```{r}
-head(vars)
-```
 
 
 In this example, we want to look at percent poverty as it relates to female employment rates at the Wisconsin county-level. We will use the American Community Survey (ACS) 5-year data. The variables we will extract are:
@@ -88,27 +52,18 @@ In this example, we want to look at percent poverty as it relates to female empl
 - `B23022_001` - Estimate: Total: status in the past 12 months by usual hours worked per week in the past 12 months by weeks worked in the past 12 months for the population 16-64 years old (Male and Female)
 
 
-We will get 5-year estimates from 2010-2014, 2011-2015, 2012-2016, 2013-2017, 2014-2018 using the `get_acs()` function from the `tidycensus` package/
+We first load in the dataset `wi_raw` that contains the raw 5-year estimates from 2010-2014, 2011-2015, 2012-2016, 2013-2017, 2014-2018 ACS data at the county-level in Wisconsin using `data(wi_raw)`:
 
-```{r, results=FALSE}
-years <- lst(2014,2015,2016,2017,2018)
-
-
-multi_year <- map(years,~ get_acs(geography = "county",
-                                  variables = c("B17020_001","B17020_002","B23022_026","B23022_001"),
-                                  state = "WI",
-                                  year = .x,
-                                  geometry = TRUE)) %>%
-              map2(years, ~ mutate(.x, id = .y))
-
-wi_raw <- reduce(multi_year, rbind)
+```{r}
+data(wi_raw)
 
 ```
 
-We first explore the raw data:
+We first explore the raw Wisconsin data:
 
 ```{r}
 class(wi_raw)
+names(wi_raw)
 str(wi_raw)
 head(wi_raw)
 ```
@@ -500,4 +455,44 @@ knitr::kable(tidy(out$res), digits=3, caption="Long Format Model")
 knitr::kable(tidy(out2), digits= 3,caption="Wide Format Model")
 ```
 
+#Working with `tidycensus`
 
+In this example, we have provided the data used. However the data can be downloaded directly using the `tidycensus` R package. The code to download the data directly is below. To use `tidycensus`, you will need to request an API key [here](https://api.census.gov/data/key_signup.html). 
+
+
+```{r, eval=FALSE}
+#load tidycensus
+library(tidycensus)
+options(tigris_use_cache = TRUE)
+```
+
+##Downloading Census Data Using `tidycensus`
+
+From the `tidycensus` package, we use the `census_api_key()` function and specify `install=TRUE` so that the API key is stored in the local R environment. To access the variables we want from the American Community Survey. It should be noted that using tidycensus, we can also access the 1990, 2000, and 2010 decennial US Census data as well.
+
+```{r, echo=FALSE, eval = FALSE, results=FALSE}
+census_api_key(Sys.getenv("CENSUS_API_KEY"), install=TRUE, overwrite = TRUE)
+readRenviron("~/.Renviron")
+```
+
+```{r,eval=FALSE}
+census_api_key("YOUR API KEY HERE", install=TRUE)
+```
+
+(You may need to either restart your R session or run `readRenviron("~/.Renviron")` in your console to use the API key immediately.)
+
+```{r, eval=FALSE}
+vars <- load_variables(2018, "acs5", cache=TRUE)
+years <- lst(2014,2015,2016,2017,2018)
+multi_year <- map(years,~ get_acs(geography = "county",
+                                  variables = c("B17020_001","B17020_002","B23022_026","B23022_001"),
+                                  state = "WI",
+                                  year = .x,
+                                  geometry = TRUE)) %>%
+              map2(years, ~ mutate(.x, id = .y))
+
+wi_raw <- reduce(multi_year, rbind)
+
+```
+
+For more examples of working with the `tidycensus` package, please see the vignettes for [basic usage](https://walker-data.com/tidycensus/articles/basic-usage.html) and working with [spatial data](https://walker-data.com/tidycensus/articles/spatial-data.html). Full `tidycensus` support can be found [here](https://walker-data.com/tidycensus/index.html).
