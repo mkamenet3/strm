@@ -8,7 +8,8 @@ Authors@R: c(
 Description: Implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 Depends:
     R (>= 4.0),
-    spatialreg (== 1.1-5)
+    spatialreg (== 1.1-5),
+    cpp11 (== 0.1.0)
 Imports:
     rlang (== 0.4.6),
     dplyr (== 1.0.0),
@@ -18,7 +19,6 @@ Imports:
     rgdal (== 1.5.10),
     testthat (== 2.3.2),
     rmarkdown (== 2.3),
-    cpp11 (== 0.1.0),
     stats,
     grDevices,
     methods,
