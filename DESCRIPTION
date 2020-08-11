@@ -9,7 +9,7 @@ Description: Implements a spatio-temporal regression model based on the Chi & Zh
 Depends:
     R (>= 4.0),
     spatialreg (== 1.1-5),
-    cpp11 (== 0.1.0)
+    cpp11 (>= 0.1.0)
 Imports:
     rlang (== 0.4.6),
     dplyr (== 1.0.0),
