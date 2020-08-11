@@ -15,9 +15,10 @@ Imports:
     tidyr (== 1.0.0),
     purrr (== 0.3.4),
     magrittr (== 1.5),
-    rgdal (>= 1.5.10),
-    testthat (>= 2.3.2),
-    rmarkdown (>= 2.3),
+    rgdal (== 1.5.10),
+    testthat (== 2.3.2),
+    rmarkdown (== 2.3),
+    cpp11 (== 0.1.0),
     stats,
     grDevices,
     methods,
@@ -25,15 +26,15 @@ Imports:
     utils,
     knitr
 Suggests:
-    splm (>= 1.4.11),
+    splm (== 1.4.11),
     spdep (== 1.1-3),
     sf (== 0.9-4),
-    Ecdat (>= 0.3-7),
+    Ecdat (== 0.3-7),
     tidycensus (== 0.9.9),
     ggplot2 (== 3.3.2),
     patchwork (== 1.0.1),
     broom (== 0.7.0)
-LinkingTo:	cpp11 (== 0.1)  
+LinkingTo:	cpp11 
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)
