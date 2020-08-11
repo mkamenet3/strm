@@ -35,6 +35,7 @@ Suggests:
     patchwork (== 1.0.1),
     broom (== 0.7.0)
 LinkingTo:	cpp11 
+Remotes: github::r-lib/cpp11
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)
