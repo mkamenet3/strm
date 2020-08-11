@@ -8,17 +8,17 @@ Authors@R: c(
 Description: Implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 Depends:
     R (>= 4.0),
-    spatialreg (== 1.1-5),
+    spatialreg (>= 1.1-5),
     cpp11 (>= 0.1.0)
 Imports:
-    rlang (== 0.4.6),
-    dplyr (== 1.0.0),
-    tidyr (== 1.0.0),
-    purrr (== 0.3.4),
-    magrittr (== 1.5),
-    rgdal (== 1.5.10),
-    testthat (== 2.3.2),
-    rmarkdown (== 2.3),
+    rlang (>= 0.4.6),
+    dplyr (>= 1.0.0),
+    tidyr (>= 1.0.0),
+    purrr (>= 0.3.4),
+    magrittr (>= 1.5),
+    rgdal (>= 1.5.10),
+    testthat (>= 2.3.2),
+    rmarkdown (>= 2.3),
     stats,
     grDevices,
     methods,
@@ -26,14 +26,14 @@ Imports:
     utils,
     knitr
 Suggests:
-    splm (== 1.4.11),
-    spdep (== 1.1-3),
-    sf (== 0.9-4),
-    Ecdat (== 0.3-7),
-    tidycensus (== 0.9.9),
-    ggplot2 (== 3.3.2),
-    patchwork (== 1.0.1),
-    broom (== 0.7.0)
+    splm (>= 1.4.11),
+    spdep (>= 1.1-3),
+    sf (>= 0.9-4),
+    Ecdat (>= 0.3-7),
+    tidycensus (>== 0.9.9),
+    ggplot2 (>= 3.3.2),
+    patchwork (>= 1.0.1),
+    broom (>= 0.7.0)
 LinkingTo:	cpp11 
 Remotes: github::r-lib/cpp11
 VignetteBuilder: knitr
