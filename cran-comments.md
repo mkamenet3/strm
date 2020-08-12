@@ -19,6 +19,10 @@ Possibly mis-spelled words in DESCRIPTION:
   spatio (8:27)
 - These are not misspelled.
 
+Unknown, possibly mis-spelled, fields in DESCRIPTION:
+  'Remotes'
+- Not misspelled
+
 ### Warnings:
 
 * 0 Warnings
