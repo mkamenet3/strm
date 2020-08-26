@@ -16,10 +16,10 @@ Package dependencies include:
 
     - R (>= 3.6),
     - spatialreg (>= 1.1-5),
-    - dplyr (>= 1.0.0)
+   
 
 Package imports include:
-
+    - dplyr (>= 1.0.0),
     - rlang (>= 0.4.6),
     - tidyr (>= 1.0.0),
     - purrr (>= 0.3.4),
