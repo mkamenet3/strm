@@ -5,7 +5,7 @@ Authors@R: c(
         person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre")),
         person("Guangqing", "Chi", ,"guangqingchi@gmail.com", role = "aut"),
         person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = "aut"))
-Description: Implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
+Description: Implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables. This package builds on the errorsarlm() function from the spatialreg package.
 Depends:
     R (>= 3.6),
     spatialreg (>= 1.1-5)
