@@ -1,8 +1,9 @@
 ## Test environments
 
-* Windows 10 (development) R 4.0.2; Windows Server 2008 R2 SP1, R-devel, 32/64 bit (via rhub)
-* Travis-CI used to continuous integration
-* Checked using rhub and win-builder. Passed all windows builds. Debian Linux R-release GCC - OK. PARSEERROR for Fedora distribution.
+* Windows Server 2008 R2 SP1, R-release, 32/64 bit
+* macOS 10.13.6 High Sierra, R-release, CRAN's setup
+* Debian Linux, R-release, GCC
+* PREPERROR: CentOS 6, stock R from EPEL; Ubuntu Linux 16.04 LTS, R-release, GCC; Fedora Linux, R-devel, clang, gfortran
 
 ## R CMD check results
 
@@ -12,16 +13,13 @@
 
 ### Notes:
 
-* 1 Note (Windows):
-Possibly mis-spelled words in DESCRIPTION:
-  Spatio (2:8)
-  Zhu (8:79)
-  spatio (8:27)
-- These are not misspelled.
 
-Unknown, possibly mis-spelled, fields in DESCRIPTION:
-  'Remotes'
-- Not misspelled
+* 1 Note (MacOS):
+ checking installed package size ... NOTE
+  installed size is  5.5Mb
+  sub-directories of 1Mb or more:
+    data   5.0Mb
+This is due to the spatial shape files needed for the vignette.    
 
 ### Warnings:
 

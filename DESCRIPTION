@@ -5,9 +5,9 @@ Authors@R: c(
         person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre")),
         person("Guangqing", "Chi", ,"guangqingchi@gmail.com", role = "aut"),
         person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = "aut"))
-Description: Implements a spatio-temporal regression model based on the Chi & Zhu Spatial Regression Models for the Social Sciences (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables. This package builds on the errorsarlm() function from the spatialreg package.
+Description: Implements a spatio-temporal regression model based on the Chi, G. and Zhu, J. (2019) Spatial Regression Models for the Social Sciences <isbn:9781544302072>. The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables. This package builds on the errorsarlm() function from the spatialreg package.
 Depends:
-    R (>= 3.6),
+    R (>= 3.5),
     spatialreg (>= 1.1-5)
 Imports:
     rlang (>= 0.4.6),
@@ -33,7 +33,6 @@ Suggests:
     ggplot2 (>= 3.3.2),
     patchwork (>= 1.0.1),
     broom (>= 0.7.0)
-Remotes: github::r-lib/cpp11
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>= 2)
