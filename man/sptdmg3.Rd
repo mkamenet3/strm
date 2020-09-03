@@ -5,13 +5,13 @@
 \alias{sptdmg3}
 \title{sptdmg3 SpatialPolygonsDataFrame: Wisconsin Minor Civil Divisions}
 \format{
-An object of class \code{SpatialPolygonsDataFrame} with 1837 rows and 43 columns.
+An object of class \code{SpatialPolygonsDataFrame} with 1837 rows and 7 columns.
 }
 \usage{
 data(sptdmg3)
 }
 \description{
-We use the example from \emph{Spatial Regression Models for the Social Sciences} Chi & Zhu (2019). The example uses population growth data from 2000 to 2010. Data are at the minor civil division (MCD) level in Wisconsin. There are two years of data: 2000 and 2010. The variables we will use are:
+We use the example from Chi, G. and Zhu, J. (2019) Spatial Regression Models for the Social Sciences. The example uses population growth data from 2000 to 2010. Data are at the minor civil division (MCD) level in Wisconsin. There are two years of data: 2000 and 2010. The subset of variables we use are:
 \itemize{
 \item \code{LNP1000}: population growth from 2000 to 2010.
 \item \code{LNP0090}: population growth from 1990 to 2000.
@@ -25,6 +25,6 @@ class(sptdmg3)
 names(sptdmg3)
 }
 \references{
-Chi, Guangqing, and Jun Zhu. \emph{Spatial Regression Models for the Social Sciences.} SAGE, 2019.
+Chi, Guangqing, and Jun Zhu (2019). \emph{Spatial Regression Models for the Social Sciences.} SAGE.
 }
 \keyword{datasets}
