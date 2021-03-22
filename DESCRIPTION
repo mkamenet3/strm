@@ -8,7 +8,7 @@ Authors@R: c(
 Description: Implements a spatio-temporal regression model based on Chi, G. and Zhu, J. (2019) Spatial Regression Models for the Social Sciences <isbn:9781544302072>. The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables. This package builds on the errorsarlm() function from the spatialreg package.
 Depends:
     R (>= 3.5),
-    spatialreg (>= 1.1-5)
+    spatialreg (>= 1.1-7)
 Imports:
     rlang (>= 0.4.6),
     dplyr (>= 1.0.0),
