@@ -4,7 +4,7 @@ output: rmarkdown::html_vignette
 header-includes:
    - \usepackage{float}
 vignette: >
-  %\VignetteIndexEntry{strm and census data}
+  %\VignetteIndexEntry{Using strm with Census Data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -86,6 +86,8 @@ wi <- wi_raw %>%
            feemp_prct = B23022_026/B23022_001,
            year=id,
            logpov = log(pov_prct)) 
+
+st_crs(wi) = 4326
 class(wi)
 str(wi)
 ```

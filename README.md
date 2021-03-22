@@ -21,7 +21,7 @@ This package is still under development. Please report bugs or constructive tips
 Package dependencies include:
 
     - R (>= 3.6),
-    - spatialreg (>= 1.1-5),
+    - spatialreg (>= 1.1-7),
    
 
 Package imports include:
