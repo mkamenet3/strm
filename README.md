@@ -21,7 +21,7 @@ This package is still under development. Please report bugs or constructive tips
 Package dependencies include:
 
     - R (>= 3.6),
-    - spatialreg (>= 1.1-7),
+    - spatialreg (>= 1.1-5),
    
 
 Package imports include:
@@ -52,7 +52,7 @@ Package suggests include:
     - tidycensus (>= 0.9.9),
     - ggplot2 (3.3.2),
     - patchwork (>= 1.0.1),
-    - broom (>= 0.7.0)
+    - gt (>= 0.2.2)
 
 
 To download the latest version of `strm`:
