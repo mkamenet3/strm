@@ -4,11 +4,17 @@
 
 `strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). The approach here fits a simultaneous spatial error model (SAR) while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
 
+## News
+
+- 2021-03-21: Resolved [issue #34](https://github.com/mkamenet3/strm/issues/34) with patch 0.1.2.
+
+## Installation
+
+
 This package builds on the `errorsarlm()` function from the `spatialreg` package.
 
 This package is still under development. Please report bugs or constructive tips to issues [here](https://github.com/mkamenet3/strm/issues).
 
-## Installation
 
 `strm` was built on R version 4.0.2 ("Taking Off Again").
 

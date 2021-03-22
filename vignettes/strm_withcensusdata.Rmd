@@ -19,12 +19,11 @@ knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 8, message = TRUE
 #load strm
 library(strm)
 library(rmarkdown)
-library(knitr)
 #load package dependencies for the vignette
 library(tidyr)
+library(gt)
 library(dplyr)
 library(ggplot2)
-library(broom)
 library(patchwork)
 library(purrr)
 library(rgdal)
@@ -40,7 +39,7 @@ This package builds on the `errorsarlm()` function from the `spatialreg` package
 
 This package is still under development. Please report bugs or constructive tips to issues [here](https://github.com/mkamenet3/strm/issues).
 
-#Introduction
+# Introduction
 
 
 This data example will work through downloading census data using the `tidycensus` package, creating spatial weights, and then using `strm` to fit the spatio-temporal regression model. We will fit the same model using both the *long* and *wide* data formats.
@@ -75,7 +74,7 @@ head(wi_raw)
 Notice that `wi_raw` is of class `sf` and class `data.frame`
 
 ## Long-Form Data
-###Exploratory (Spatial) Data Analysis
+### Exploratory (Spatial) Data Analysis
 
 We first clean the data in order to calculate percent of each year-county population that is in poverty and percent female employment rate. We also take the natural log transformation of the poverty percent rate. We first use `select()` from `dplyr` to select out the `moe` (margin of error) variable as we do  not need it for this analysis. We then use `spread` from `tidyr` to reformat the key variables from long to wide format so that we can then use `mutate()` from `dplyr` to create new variables (`pov_prct`, `feemp_prct`, `id`, `logpov`). Note this dataset is still in `long` format because there are multiple observations for each county due to multiple years.
 
@@ -195,7 +194,7 @@ ggplot(wi) +
 ```
 
 
-###Create Neighbors
+### Create Neighbors
 
 In order to apply the spatio-temporal model using `strm`, we need to first define county neighbors. We will define first-order contiguity-based neighborhood structure (Queen's adjacency) with row-standardized spatial weights. 
 
@@ -249,7 +248,7 @@ plot(listw_w, coords, col="blue", add=TRUE)
 ```
 
 
-###Using `strm`
+### Using `strm`
 
 We use the `strm()` function from the `strm` package. The first argument is the model formula. Given that the data is in *long* format, `strm` will create the lagged values for you as well as the lagged response in the right-hand side of the model. The next argument is `id`, which we set to "NAME" as each observation is taken at the county-level. We then specify the name of the data set (`data=wi`). We set the argument `listw=listw_w` to the row-standardized list of spatial weights. We set `time=2` because there are 2 time periods in the dataset. We set  `wide=FALSE`, thereby specifying that the data is in *long* format. Lastly, we set the argument `returndf=TRUE` to return the modified dataframe along with the model output. The default to `returndf` is `FALSE` and `strm` will only return the model output summary.
 
@@ -331,7 +330,7 @@ nrow(wi_w)
 Notice how in this wide format, each variable is one of our poverty percent or female employment percent variables plus an associated year, and now we only have `r nrow(wi_w)` rows in this wide format compared to `r nrow(wi)` (72 counties $\times$ 2 time periods) rows.
 
 
-###Exploratory (Spatial) Data Analysis
+### Exploratory (Spatial) Data Analysis
 
 We will use the 2018 geometries for creating our neighborhood structure and list of spatial weights. To do this, we first create `wi_2018geom`, which is a simplified `sf` dataframe that only contains the `GEOID` variable and the associated county geometries.
 
@@ -382,7 +381,7 @@ patch1 +
 
 ```
 
-###Create Neighbors
+### Create Neighbors
 
 Creating the neighborhood structure and list of spatial weights is the same as above in *long* format.
 
@@ -415,7 +414,7 @@ plot(listw_w, coords, col="blue", add=TRUE)
 
 ```
 
-###Using `strm`
+### Using `strm`
 
 The first argument is the model formula. Given that the data is now in *wide* format, we must manually enter the response and all of the explanatory variables and their lagged terms. The next argument is `id`, which we set to "NAME" as each observation is taken at the county-level. We then specify the name of the data set (`data=wi_w.sf`). We set the argument `listw=listw_w` to the row-standardized list of spatial weights. We set `time=2` because there are 2 time periods in the dataset. We set  `wide=TRUE`, thereby specifying that the data is in *wide* format. 
 
@@ -430,11 +429,27 @@ summary(out2)
 Compare the output from `out$res` from the *long* format dataframe and `out2` from the *wide* format dataframe and see that they are the same!
 
 ```{r}
-knitr::kable(tidy(out$res), digits=3, caption="Long Format Model")
-knitr::kable(tidy(out2), digits= 3,caption="Wide Format Model")
+out_coefs <- c(as.vector(out$res$coefficients), out$res$lambda)
+out_ses <- c(as.vector(out$res$rest.se),out$res$lambda.se)
+out_names <- c(attributes(out$res$coefficients)[[1]], "lambda")
+
+out2_coefs <- c(as.vector(out2$coefficients), out2$lambda)
+out2_ses <- c(as.vector(out2$rest.se), out2$lambda.se)
+out2_names <- c(attributes(out2$coefficients)[[1]], "lambda")
+
+out_table <- rbind.data.frame(cbind.data.frame(Term=out_names, Estimate=out_coefs, SE=out_ses, format=rep("Long format",length(out_names))),
+                              cbind.data.frame(Term=out2_names, Estimate=out2_coefs, SE=out2_ses,format=rep("Wide format",length(out2_names))))
+
+out_table %>%
+  gt(groupname_col = c("format")) %>%
+  tab_header(title="Comparison of Long and Wide format Output") %>%
+  fmt_number(columns = vars(Estimate, SE),  decimals = 2) %>%
+  cols_label(Term = md("**Term**"), Estimate=md("**Estimate**"), SE=md("**SE**"))
+
+
 ```
 
-#Working with `tidycensus`
+# Working with `tidycensus`
 
 In this example, we have provided the data used. However the data can be downloaded directly using the `tidycensus` R package. The code to download the data directly is below. To use `tidycensus`, you will need to request an API key [here](https://api.census.gov/data/key_signup.html). 
 
@@ -445,7 +460,7 @@ library(tidycensus)
 options(tigris_use_cache = TRUE)
 ```
 
-##Downloading Census Data Using `tidycensus`
+## Downloading Census Data Using `tidycensus`
 
 From the `tidycensus` package, we use the `census_api_key()` function and specify `install=TRUE` so that the API key is stored in the local R environment. To access the variables we want from the American Community Survey. It should be noted that using tidycensus, we can also access the 1990, 2000, and 2010 decennial US Census data as well.
 

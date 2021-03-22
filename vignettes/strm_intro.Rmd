@@ -38,7 +38,7 @@ This package builds on the `errorsarlm()` function from the `spatialreg` package
 This package is still under development. Please report bugs or constructive tips to issues [here](https://github.com/mkamenet3/strm/issues).
 
 
-#Introduction
+# Introduction
 
 
 Fit a spatial error model but include a temporally lagged response variable, temporally lagged explanatory variable, and temporally and spatially lagged explanatory variables.
@@ -57,7 +57,7 @@ This becomes:
 $$Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t-1}\beta_3 - W X_t \rho \beta_1 -WX_{t-1} \rho \beta_3 + \varepsilon$$
 
 
-##Example 1: Produce in the United States
+## Example 1: Produce in the United States
 
 (This example has been adapted from the `splm` package vignette.)
 
@@ -72,7 +72,7 @@ The first data set we will use is the **Produc** data set from the `Ecdat` packa
 - `emp`: labor input measured by employment in non-agricultural payrolls.
 - `unemp`: state unemployment rate.
 
-We also load **usaww** from the `splm` package, a spatial weights matrix of the 48 contintental United States based on second-order neighbors.
+We also load **usaww** from the `splm` package, a spatial weights matrix of the 48 continental United States based on second-order neighbors.
 
 
 ```{r}
@@ -86,7 +86,7 @@ str(usaww)
 
 ```
 
-###Single Year Lag
+### Single Year Lag
 
 We next convert the spatial weights matrix to a list of spatial weights using the `mat2listw()` function from the `spdep` package and check the `class()` of the object:
 
@@ -116,7 +116,7 @@ summary(out)
 From the model summary output, we see that `strm` has included lagged variables (\*.Tlag1) for each of the explanatory variables initially specified (`log(pcap), log(pc), log(emp), unemp`), as well as a lagged variable for the response (`log(gsp)`).
 
 
-###With 2 Lags
+### With 2 Lags
 
 As the number of time periods in the data increase, so do the number of lags. If we now use the same model, but instead include an additional year (1972) and set `time=3`.
 
@@ -137,7 +137,7 @@ summary(out)
 
 From the model summary output, we see that `strm` has now included two lagged variables (\*.Tlag1 and \*.Tlag2) for each of the explanatory variables initially specified, as well as two lags for the response variable.
 
-##Example 2: Minor Civil Divisions in Wisconsin
+## Example 2: Minor Civil Divisions in Wisconsin
 
 We use the example from *Spatial Regression Models for the Social Sciences* Chi & Zhu (2019). The example uses population growth data from 2000 to 2010. Data are at the minor civil division (MCD) level in Wisconsin. There are two years of data: 2000 and 2010. The variables we will use are:
 
