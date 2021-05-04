@@ -1,6 +1,6 @@
 Package: strm
 Title: Spatio-Temporal Regression Modeling
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
         person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre")),
         person("Guangqing", "Chi", ,"guangqingchi@gmail.com", role = "aut"),
