@@ -7,10 +7,10 @@ Authors@R: c(
         person("Jun", "Zhu", , "jun.zhu.e@gmail.com", role = "aut"))
 Description: Implements a spatio-temporal regression model based on Chi, G. and Zhu, J. (2019) Spatial Regression Models for the Social Sciences <isbn:9781544302072>. The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables. This package builds on the errorsarlm() function from the spatialreg package.
 Depends:
-    R (>= 3.5),
-    spatialreg (>= 1.1-7)
+    R (>= 4.0),
+    spatialreg (>= 1.1)
 Imports:
-    rlang (>= 0.4.11),
+    rlang (>= 0.4),
     dplyr (>= 1.0.5),
     tidyr (>= 1.1.3),
     purrr (>= 0.3.4),
@@ -18,12 +18,12 @@ Imports:
     rgdal (>= 1.5.23),
     testthat (>= 3.0.2),
     rmarkdown (>= 2.6.6),
+    knitr (>= 1.33),
     stats,
     grDevices,
     methods,
     graphics,
-    utils,
-    knitr
+    utils
 Suggests:
     splm (>= 1.4.11),
     spdep (>= 1.1-7),
@@ -33,8 +33,9 @@ Suggests:
     tidycensus (>= 0.11.4),
     ggplot2 (>= 3.3.3),
     patchwork (>= 1.1.1),
-    gt (>= 0.2.2)
-VignetteBuilder: knitr
+    gt (>= 0.2.2),
+    markdown
+VignetteBuilder: knitr, rmarkdown
 Encoding: UTF-8
 License: GPL (>= 2)
 Maintainer: Maria Kamenetsky <maria.kamenetsky@gmail.com>

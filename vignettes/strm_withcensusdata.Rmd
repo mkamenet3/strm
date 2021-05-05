@@ -5,7 +5,7 @@ header-includes:
    - \usepackage{float}
 vignette: >
   %\VignetteIndexEntry{Using strm with Census Data}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   \usepackage[utf8]{inputenc}
 ---
 
