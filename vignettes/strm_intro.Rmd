@@ -26,7 +26,6 @@ library(rgdal)
 library(spdep)
 library(rgeos)
 library(sf)
-library(splm)
 library(knitr)
 library(Ecdat)
 ```
@@ -59,7 +58,7 @@ $$Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t
 
 ## Example 1: Produce in the United States
 
-(This example has been adapted from the `splm` package vignette.)
+(This example has been adapted from the [`splm`](https://cran.r-project.org/src/contrib/Archive/splm/) package vignette.)
 
 
 The first data set we will use is the **Produc** data set from the `Ecdat` package. This data set is a panel of United States production data from 1970-1986. There are 816 observations by county in the United States. The variables we will use are:
@@ -72,7 +71,7 @@ The first data set we will use is the **Produc** data set from the `Ecdat` packa
 - `emp`: labor input measured by employment in non-agricultural payrolls.
 - `unemp`: state unemployment rate.
 
-We also load **usaww** from the `splm` package, a spatial weights matrix of the 48 continental United States based on second-order neighbors.
+We also load **usaww** (originally from the [`splm`](https://cran.r-project.org/src/contrib/Archive/splm/) package), a spatial weights matrix of the 48 continental United States based on second-order neighbors.
 
 
 ```{r}

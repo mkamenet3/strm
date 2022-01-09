@@ -6,6 +6,7 @@
 
 ## News
 
+- 2022-01-10: Resolved [issue #38](https://github.com/mkamenet3/strm/issues/38) with patch 0.1.3.
 - 2021-03-21: Resolved [issue #34](https://github.com/mkamenet3/strm/issues/34) with patch 0.1.2.
 
 ## Installation
@@ -45,7 +46,6 @@ Package imports include:
     
 Package suggests include:
 
-    - splm (>= 1.4.11),
     - spdep (>= 1.1-3),
     - sf (>= 0.9-4),
     - Ecdat (>= 0.3-7),

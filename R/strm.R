@@ -17,7 +17,7 @@
 #' library(spdep)
 #' library(dplyr)
 #' data("Produc", package = "Ecdat")
-#' data("usaww", package = "splm")
+#' data("usaww")
 #' usalw <- mat2listw(usaww)
 #' formula <- as.formula( log(gsp)  ~ log(pcap) + log(pc) + log(emp) + unemp)
 #' out1 <- strm(formula, id="state", data=Produc, 
