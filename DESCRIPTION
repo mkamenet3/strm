@@ -25,7 +25,6 @@ Imports:
     graphics,
     utils
 Suggests:
-    splm (>= 1.4.11),
     spdep (>= 1.1-7),
     rgeos (>= 0.5-5),
     sf (>= 0.9-8),
