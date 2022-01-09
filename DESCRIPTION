@@ -1,6 +1,6 @@
 Package: strm
 Title: Spatio-Temporal Regression Modeling
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
         person("Maria", "Kamenetsky", , "maria.kamenetsky@gmail.com", role = c("aut", "cre")),
         person("Guangqing", "Chi", ,"guangqingchi@gmail.com", role = "aut"),
@@ -25,7 +25,6 @@ Imports:
     graphics,
     utils
 Suggests:
-    splm (>= 1.4.11),
     spdep (>= 1.1-7),
     rgeos (>= 0.5-5),
     sf (>= 0.9-8),
