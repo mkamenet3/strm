@@ -16,10 +16,8 @@
 ### Notes:
 
 
-* 1 Note (Fedora Linux, R-devel, clang, gfortran): 
-Examples with CPU (user + system) or elapsed time > 5s
-      user system elapsed
-strm 5.047  0.189   0.685
+* 2 Notes (Fedora Linux, R-devel, clang, gfortran): 
+- .travis.yml file, config.site, and cran-comments.md files
 
 ### Warnings:
 
