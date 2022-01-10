@@ -64,7 +64,7 @@ devtools::install_github("mkamenet3/strm")
 ```
 
   <!-- badges: start -->
-  [![Travis build status](https://travis-ci.com/mkamenet3/strm.svg?branch=master)](https://travis-ci.com/mkamenet3/strm)
+  [![Travis build status](https://app.travis-ci.com/mkamenet3/strm.svg?branch=master&status=passed)](https://app.travis-ci.com/github/mkamenet3/strm)
   
   <!-- badges: end -->
 <!--[![Build Status](https://travis-ci.com/mkamenet3/strm.svg?token=aPo4kopCe3udvbX77YvH&branch=master)](https://travis-ci.com/mkamenet3/strm)-->
