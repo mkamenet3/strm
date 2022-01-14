@@ -27,7 +27,7 @@ library(spdep)
 library(rgeos)
 library(sf)
 library(knitr)
-library(Ecdat)
+
 ```
 
 `strm` is an `R` package that fits spatio-temporal regression model based on Chi & Zhu *Spatial Regression Models for the Social Sciences* (2019). The approach here fits a spatial error model while incorporating a temporally lagged response variable and temporally lagged explanatory variables.
@@ -61,7 +61,7 @@ $$Y_t = Y_{t-1} \beta_2 + \rho W Y_t - \rho\beta_2 WY_{t-1} + X_t \beta_1 + X_{t
 (This example has been adapted from the [`splm`](https://cran.r-project.org/src/contrib/Archive/splm/) package vignette.)
 
 
-The first data set we will use is the **Produc** data set from the `Ecdat` package. This data set is a panel of United States production data from 1970-1986. There are 816 observations by county in the United States. The variables we will use are:
+The first data set we will use is the **Produc** data set from the [`Ecdat` package](https://cran.r-project.org/web/packages/Ecdat/index.html). This data set is a panel of United States production data from 1970-1986. There are 816 observations by county in the United States. The variables we will use are:
 
 - `year`: year
 - `state`: state in the United States

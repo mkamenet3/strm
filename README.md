@@ -48,7 +48,6 @@ Package suggests include:
 
     - spdep (>= 1.1-3),
     - sf (>= 0.9-4),
-    - Ecdat (>= 0.3-7),
     - tidycensus (>= 0.9.9),
     - ggplot2 (3.3.2),
     - patchwork (>= 1.0.1),

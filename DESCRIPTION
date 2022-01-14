@@ -41,6 +41,6 @@ Maintainer: Maria Kamenetsky <maria.kamenetsky@gmail.com>
 BugReports: https://github.com/mkamenet3/strm/issues
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 SystemRequirements: C++11, GDAL (>= 1.11.4), GEOS (>= 3.4.0), PROJ (>= 6.3.1)
 NeedsCompilation: yes
